@@ -21,5 +21,3 @@ List the changes made in this pull request.
 - [ ] Documentation has been updated (if applicable).
 - [ ] This PR is ready for review.
 - [ ] Screenshots added (if applicable).
-
-https://igit.atlassian.net/jira/software/projects/AA/boards/1?selectedIssue=AA-1
