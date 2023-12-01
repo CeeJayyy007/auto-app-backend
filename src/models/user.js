@@ -1,4 +1,5 @@
 const { DataTypes, Model } = require('sequelize');
+const sequelize = require('../config/database');
 
 // Define the User model
 const User = sequelize.define('User', {
@@ -34,9 +35,14 @@ const User = sequelize.define('User', {
   phone: {
     type: DataTypes.STRING,
     allowNull: true,
+    unique: true,
     validate: {
       is: /^\+?[1-9]\d{1,14}$/ // Regular expression to validate phone number format
     }
+  },
+  deletedAt: {
+    type: DataTypes.DATE,
+    allowNull: true
   }
 });
 
