@@ -66,14 +66,33 @@ usersRouter.get('/:userId', async (req, res) => {
 // Update a user by ID
 usersRouter.put('/:userId', async (req, res) => {
   try {
+    const existingUser = await User.findByPk(req.params.userId);
+
+    if (!existingUser) {
+      res.status(404).json({ error: 'User not found' });
+      return;
+    }
+
+    // Hash the new password before updating (if provided)
+    if (req.body.password) {
+      req.body.password = await bcrypt.hash(req.body.password, 10);
+    }
+
+    // Update the user
     const [updatedRows] = await User.update(req.body, {
-      where: { id: req.params.userId }
+      where: { id: req.params.userId },
+      returning: true
     });
+
     if (updatedRows === 0) {
       res.status(404).json({ error: 'User not found' });
       return;
     }
-    res.status(200).json({ message: 'User updated successfully' });
+
+    // Get the updated user record
+    const updatedUser = await User.findByPk(req.params.userId);
+
+    res.status(200).json(updatedUser);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });

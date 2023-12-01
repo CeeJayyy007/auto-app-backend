@@ -16,7 +16,7 @@ const checkConnection = async () => {
   try {
     await sequelize.authenticate();
 
-    await sequelize.sync({ force: false });
+    // await sequelize.sync({ force: false });
 
     console.log(chalk.green(`DB Connected and synced`));
   } catch (error) {
