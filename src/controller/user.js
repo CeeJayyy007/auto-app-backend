@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const usersRouter = require('express').Router();
 usersRouter.use(bodyParser.json());
 const User = require('../models/user');
+const authMiddleware = require('../middlewares/authMiddleware');
 
 // Create a new user
 usersRouter.post('/', async (req, res) => {
@@ -33,7 +34,7 @@ usersRouter.post('/', async (req, res) => {
 });
 
 // Get all users
-usersRouter.get('/', async (req, res) => {
+usersRouter.get('/', authMiddleware.userExtractor, async (req, res) => {
   try {
     const users = await User.findAll();
     res.status(200).json(users);
@@ -44,9 +45,10 @@ usersRouter.get('/', async (req, res) => {
 });
 
 // Get a specific user by ID
-usersRouter.get('/:userId', async (req, res) => {
+usersRouter.get('/:userId', authMiddleware.userExtractor, async (req, res) => {
   try {
-    const user = await User.findByPk(req.params.userId);
+    const user = req.user;
+
     if (!user) {
       res.status(404).json({ error: 'User not found' });
       return;
@@ -59,9 +61,9 @@ usersRouter.get('/:userId', async (req, res) => {
 });
 
 // Update a user by ID
-usersRouter.put('/:userId', async (req, res) => {
+usersRouter.put('/:userId', authMiddleware.userExtractor, async (req, res) => {
   try {
-    const existingUser = await User.findByPk(req.params.userId);
+    const user = req.user;
 
     if (!existingUser) {
       res.status(404).json({ error: 'User not found' });
@@ -95,20 +97,26 @@ usersRouter.put('/:userId', async (req, res) => {
 });
 
 // Delete a user by ID
-usersRouter.delete('/:userId', async (req, res) => {
-  try {
-    const deletedRows = await User.destroy({
-      where: { id: req.params.userId }
-    });
-    if (deletedRows === 0) {
-      res.status(404).json({ error: 'User not found' });
-      return;
+usersRouter.delete(
+  '/:userId',
+  authMiddleware.userExtractor,
+  async (req, res) => {
+    try {
+      const user = req.user;
+
+      const deletedRows = await User.destroy({
+        where: { id: user.id }
+      });
+      if (deletedRows === 0) {
+        res.status(404).json({ error: 'User not found' });
+        return;
+      }
+      res.status(200).json({ message: 'User deleted successfully' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
     }
-    res.status(200).json({ message: 'User deleted successfully' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
   }
-});
+);
 
 module.exports = usersRouter;
