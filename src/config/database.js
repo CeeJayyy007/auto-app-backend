@@ -16,11 +16,14 @@ const checkConnection = async () => {
   try {
     await sequelize.authenticate();
 
-    // await sequelize.sync({ force: false });
+    await sequelize.sync({ force: false });
 
-    console.log(chalk.green(`DB Connected and synced`));
+    console.log(chalk.green(`${config.DB_NAME} DB Connected and synced `));
   } catch (error) {
-    console.error(chalk.red('Unable to connect to the database:'), error);
+    console.error(
+      chalk.red(`Unable to connect to the ${config.DB_NAME} database`),
+      error
+    );
   }
 };
 
