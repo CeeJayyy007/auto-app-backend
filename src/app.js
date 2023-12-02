@@ -10,4 +10,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // routes
 app.use('/api/users', usersRouter);
 
+// middleware for testing purposes
+if (process.env.NODE_ENV === 'test') {
+  const testingRouter = require('./controller/testing');
+  app.use('/api/testing', testingRouter);
+}
+
 module.exports = app;
