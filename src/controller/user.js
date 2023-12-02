@@ -1,14 +1,8 @@
 const bodyParser = require('body-parser');
-const User = require('../models/user');
-
-// add bcrypt for password hashing
 const bcrypt = require('bcrypt');
-
-// Create an instance of the Express router
 const usersRouter = require('express').Router();
-
-// Use bodyParser middleware to parse JSON in request bodies
 usersRouter.use(bodyParser.json());
+const User = require('../models/user');
 
 // Create a new user
 usersRouter.post('/', async (req, res) => {
@@ -37,6 +31,7 @@ usersRouter.post('/', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 // Get all users
 usersRouter.get('/', async (req, res) => {
   try {
@@ -116,5 +111,4 @@ usersRouter.delete('/:userId', async (req, res) => {
   }
 });
 
-// Export the router
 module.exports = usersRouter;
