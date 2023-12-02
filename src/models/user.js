@@ -40,6 +40,10 @@ const User = sequelize.define('User', {
       is: /^\+?[1-9]\d{1,14}$/ // Regular expression to validate phone number format
     }
   },
+  updatedBy: {
+    type: DataTypes.INTEGER,
+    allowNull: true
+  },
   deletedAt: {
     type: DataTypes.DATE,
     allowNull: true
