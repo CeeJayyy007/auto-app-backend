@@ -9,7 +9,7 @@ const cors = require('cors');
 const errorHandler = require('./middlewares/errorHandler');
 const { tokenExtractor } = require('./middlewares/authMiddleware');
 const { morganMiddleware } = require('./config/logging');
-const unknownEndpoint = require('./middlewares/util');
+const unknownEndpoint = require('./middlewares/unknownEndpoint');
 const morgan = require('morgan');
 const swaggerDocs = require('./swagger-ui/swagger');
 
