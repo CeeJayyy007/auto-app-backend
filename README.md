@@ -19,9 +19,12 @@ staff, and super admin/owner.
   - ...
 
 - **Super Admin/Owner:**
+
   - Assign admin roles
   - Access financial and workshop performance metrics
   - ...
+
+- **Other features can be found in the product requirements document**
 
 ## Technologies Used (Backend)
 
@@ -66,24 +69,23 @@ staff, and super admin/owner.
    npx sequelize-cli db:migrate
    ```
 
-### Then you can start the application:
+6. Then you can start the application:
 
-    ```bash
-    npm run dev
-    ```
+```bash
+  npm run dev
+```
 
 ## or with Docker
 
-    ```bash
-    docker-compose -f docker-compose.dev.yml up --build
-    ```
+```bash
+  docker-compose -f docker-compose.dev.yml up --build
+```
 
 ## Testing
 
-    - Run tests using:
-    ```bash
-    npm test
-    ```
+```bash
+  npm test
+```
 
 ## Logging
 
