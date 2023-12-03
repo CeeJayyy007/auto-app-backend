@@ -9,7 +9,7 @@ authRouter.use(bodyParser.json());
  * '/api/login':
  *  post:
  *     tags:
- *     - User Controller
+ *     - Auth Controller
  *     summary: Login as a user
  *     requestBody:
  *      required: true
@@ -45,7 +45,7 @@ authRouter.post('/login', authController.login);
  * '/api/register':
  *  post:
  *     tags:
- *     - User Controller
+ *     - Auth Controller
  *     summary: Create a user
  *     requestBody:
  *      required: true
