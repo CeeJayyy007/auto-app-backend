@@ -28,8 +28,7 @@ usersRouter.post('/', async (req, res) => {
 
     res.status(201).json(userWithoutPassword);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    next(error);
   }
 });
 
@@ -39,8 +38,7 @@ usersRouter.get('/', authMiddleware.userExtractor, async (req, res) => {
     const users = await User.findAll();
     res.status(200).json(users);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    next(error);
   }
 });
 
@@ -55,8 +53,7 @@ usersRouter.get('/:userId', authMiddleware.userExtractor, async (req, res) => {
     }
     res.status(200).json(user);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    next(error);
   }
 });
 
@@ -91,8 +88,7 @@ usersRouter.put('/:userId', authMiddleware.userExtractor, async (req, res) => {
 
     res.status(200).json(updatedUser);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    next(error);
   }
 });
 

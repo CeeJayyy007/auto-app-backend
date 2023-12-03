@@ -35,6 +35,7 @@ const fileRotateTransport = new winston.transports.DailyRotateFile({
 
 const logger = winston.createLogger({
   format: combine(timestamp(), json()),
+  exitOnError: false, // do not exit on handled exceptions
   transports: [
     new winston.transports.File(options.file),
     new winston.transports.Console(options.console),
