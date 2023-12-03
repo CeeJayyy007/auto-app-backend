@@ -1,9 +1,6 @@
 const bcrypt = require('bcrypt');
-const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const authRouter = require('express').Router();
-authRouter.use(bodyParser.json());
 
 const generateToken = (user) => {
   const token = jwt.sign(
@@ -25,7 +22,7 @@ const isValidPassword = (password) => {
   return passwordRegex.test(password);
 };
 
-authRouter.post('/register', async (req, res) => {
+const register = async (req, res) => {
   const { email, password } = req.body;
 
   // Check if the password meets the minimum requirements
@@ -60,9 +57,9 @@ authRouter.post('/register', async (req, res) => {
   // Generate and send an authentication token
   const token = generateToken(userWithoutPassword);
   res.status(201).send({ token, user: userWithoutPassword });
-});
+};
 
-authRouter.post('/login', async (req, res) => {
+const login = async (req, res) => {
   const { email, password } = req.body;
 
   // Find the user with the given email
@@ -82,6 +79,6 @@ authRouter.post('/login', async (req, res) => {
   // Generate and send an authentication token
   const token = generateToken(userWithoutPassword);
   res.status(200).json({ token, user: userWithoutPassword });
-});
+};
 
-module.exports = authRouter;
+module.exports = { register, login };
