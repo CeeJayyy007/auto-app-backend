@@ -1,7 +1,8 @@
 const express = require('express');
 require('express-async-errors');
 const bodyParser = require('body-parser');
-const routes = require('./routes');
+const authRouter = require('./routes/authRoutes');
+const usersRouter = require('./routes/userRoutes');
 const app = express();
 const cors = require('cors');
 const errorHandler = require('./middlewares/errorHandler');
@@ -20,14 +21,17 @@ app.disable('x-powered-by');
 app.use(tokenExtractor);
 
 // routes
-app.use('/api', routes.authRouter);
-app.use('/api/users', routes.usersRouter);
+app.use('/api', authRouter);
+app.use('/api/users', usersRouter);
 
 // middleware for testing purposes
 if (process.env.NODE_ENV === 'test') {
   const testingRouter = require('./controller/testing');
   app.use('/api/testing', testingRouter);
 }
+
+// sawgger ui docs
+swaggerDocs(app);
 
 // use unknown endpoint middleware
 app.use(unknownEndpoint);
