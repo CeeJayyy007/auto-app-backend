@@ -3,6 +3,7 @@ require('express-async-errors');
 const bodyParser = require('body-parser');
 const authRouter = require('./routes/authRoutes');
 const usersRouter = require('./routes/userRoutes');
+const healthCheckRouter = require('./routes/healthCheckRoutes');
 const app = express();
 const cors = require('cors');
 const errorHandler = require('./middlewares/errorHandler');
@@ -23,6 +24,7 @@ app.use(tokenExtractor);
 // routes
 app.use('/api', authRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/health-check', healthCheckRouter);
 
 // middleware for testing purposes
 if (process.env.NODE_ENV === 'test') {
