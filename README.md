@@ -1,51 +1,100 @@
-# Node.js Server starter template
+# Vehicle Maintenance Workshop App
 
-Bootstrap api template
+A Node.js application for managing a vehicle maintenance workshop. The app
+provides functionality for handling vehicle repairs, inventory management, and
+performance metrics. It supports three user roles: customer, admin/workshop
+staff, and super admin/owner.
 
-## Getting started
+## Features
 
-```sh
-# Clone the project
-git clone https://github.com/CeeJayyy007/auto-app-backend.git
-cd auto-app-backend
+- **Customer:**
 
-# Install dependencies
-npm install
+  - View repair history
+  - ...
 
-```
+- **Admin/Workshop Staff:**
 
-Set Environment Variables
+  - Enter records of vehicle repairs
+  - Manage inventory
+  - ...
 
-```sh
-cp .env.example .env
-```
+- **Super Admin/Owner:**
+  - Assign admin roles
+  - Access financial and workshop performance metrics
+  - ...
 
-Then you can start the application:
+## Technologies Used (Backend)
 
-```sh
-npm run dev
-```
+- Node.js
+- Express.js
+- PostgreSQL
+- Sequelize ORM
+- Swagger for API documentation
+- Winston and Morgan for logging
+- Joi for validation
+  > (Full list of tools can be found in package.json file)
 
-or with Docker
+## Getting Started
 
-```sh
-docker-compose -f docker-compose.dev.yml up --build
-```
+1. Clone the repository:
 
-To create a Module, run:
+   ```bash
+    git clone https://github.com/CeeJayyy007/auto-app-backend.git
+   ```
 
-```sh
-./create-module.sh <name-of-module>
-```
+2. Install dependencies
 
-This will launch the server [node](https://nodejs.org/en/) process on port 9093
+   ```bash
+   cd auto-app-backend
+   npm install
+   ```
 
-Linting is set up using [ESlint](https://github.com/eslint/eslint/). It uses the
-rules as specificed in the .eslintrc.js file which can be found in the root
-directory.
+3. Set Environment Variables
 
-Begin linting with the following command:
+   ```bash
+   cp .example .env
+   ```
 
-```sh
-npm run lint
-```
+4. Set up the PostgreSQL database:
+
+   - Create a database named `auto_app_db` in PostgreSQL
+   - Update the database credentials in the `.env` file
+
+5. Run database migrations:
+
+   ```bash
+   npx sequelize-cli db:migrate
+   ```
+
+### Then you can start the application:
+
+    ```bash
+    npm run dev
+    ```
+
+## or with Docker
+
+    ```bash
+    docker-compose -f docker-compose.dev.yml up --build
+    ```
+
+## Testing
+
+    - Run tests using:
+    ```bash
+    npm test
+    ```
+
+## Logging
+
+    - Logs are stored in the logs folder
+    - The error logs are rotated daily and stored for 14 days
+    - Winston and Morgan are used for logging
+
+## API Documentation
+
+    - API documentation is available at http://localhost:3000/api-docs
+
+## License
+
+    - MIT
