@@ -12,7 +12,7 @@ const generateToken = (user) => {
       email: user.email
     },
     process.env.SECRET,
-    { expiresIn: '1h' }
+    { expiresIn: 60 * 60 }
   );
   return token;
 };

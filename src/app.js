@@ -3,10 +3,20 @@ const bodyParser = require('body-parser');
 const usersRouter = require('./controller/user');
 const authRouter = require('./controller/auth');
 const app = express();
+const cors = require('cors');
+const errorHandler = require('./middlewares/errorHandler');
+const { tokenExtractor } = require('./middlewares/authMiddleware');
+const { morganMiddleware } = require('./config/logging');
+const errorLogger = require('./middlewares/errorLogger');
+const unknownEndpoint = require('./middlewares/util');
+const morgan = require('morgan');
 
-// Use body-parser middleware to parse JSON and urlencoded request bodies
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
+app.use(morgan('combine', { stream: morganMiddleware.stream }));
+
+app.use(tokenExtractor);
 
 // routes
 app.use('/api/users', usersRouter);
@@ -19,11 +29,11 @@ if (process.env.NODE_ENV === 'test') {
   app.use('/api/testing', testingRouter);
 }
 
-// add unknown endpoint middleware
-const unknownEndpoint = (request, response) => {
-  response.status(404).send({ error: 'unknown endpoint' });
-};
-
+// use unknown endpoint middleware
 app.use(unknownEndpoint);
+
+// use error handler middleware
+// app.use(errorLogger);
+app.use(errorHandler);
 
 module.exports = app;
