@@ -1,6 +1,7 @@
 const { Sequelize } = require('sequelize');
 const config = require('./config');
 const chalk = require('chalk');
+const { logger } = require('./logging');
 
 // Sequelize configuration
 const sequelize = new Sequelize({
@@ -18,12 +19,9 @@ const checkConnection = async () => {
 
     await sequelize.sync({ force: false });
 
-    console.log(chalk.green(`${config.DB_NAME} DB Connected and synced `));
+    logger.info(`${config.DB_NAME} DB Connected and synced `);
   } catch (error) {
-    console.error(
-      chalk.red(`Unable to connect to the ${config.DB_NAME} database`),
-      error
-    );
+    logger.error(`Unable to connect to the ${config.DB_NAME} database`, error);
   }
 };
 
