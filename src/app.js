@@ -1,4 +1,5 @@
 const express = require('express');
+require('express-async-errors');
 const bodyParser = require('body-parser');
 const usersRouter = require('./controller/user');
 const authRouter = require('./controller/auth');
@@ -7,7 +8,6 @@ const cors = require('cors');
 const errorHandler = require('./middlewares/errorHandler');
 const { tokenExtractor } = require('./middlewares/authMiddleware');
 const { morganMiddleware } = require('./config/logging');
-const errorLogger = require('./middlewares/errorLogger');
 const unknownEndpoint = require('./middlewares/util');
 const morgan = require('morgan');
 
@@ -33,7 +33,6 @@ if (process.env.NODE_ENV === 'test') {
 app.use(unknownEndpoint);
 
 // use error handler middleware
-// app.use(errorLogger);
 app.use(errorHandler);
 
 module.exports = app;
