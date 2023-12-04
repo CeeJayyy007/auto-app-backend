@@ -18,14 +18,14 @@ authRouter.use(bodyParser.json());
  *           schema:
  *            type: object
  *            required:
- *              - username
+ *              - email
  *              - password
  *            properties:
- *              username:
+ *              email:
  *                type: string
- *                default: johndoe
+ *                default: john@doe.com
  *              password:
- *                type: string
+ *                type: password
  *                default: johnDoe20!@
  *     responses:
  *      201:
