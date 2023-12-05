@@ -81,50 +81,6 @@ vehiclesRouter.get(
  */
 vehiclesRouter.get('/:vehicleId/user', vehicleController.getVehicleAndUser);
 
-/** POST Methods */
-/**
- * @openapi
- * '/api/add-vehicle':
- *  post:
- *     tags:
- *     - Vehicle Controller
- *     summary: Register a vehicle
- *     requestBody:
- *      required: true
- *      content:
- *        application/json:
- *           schema:
- *            type: object
- *            required:
- *              - make
- *              - model
- *              - year
- *              - registration_number
- *            properties:
- *              make:
- *                type: string
- *                default: toyota
- *              model:
- *                type: string
- *                default: corolla
- *              year:
- *                type: number
- *                default: 2014
- *              registration_number:
- *                type: string
- *                default: XA123FG
- *     responses:
- *      201:
- *        description: Created
- *      409:
- *        description: Conflict
- *      404:
- *        description: Not Found
- *      500:
- *        description: Server Error
- */
-vehiclesRouter.post('/', vehicleController.createVehicle);
-
 /** PUT Methods */
 /**
  * @openapi

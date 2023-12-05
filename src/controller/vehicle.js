@@ -1,20 +1,5 @@
 const Vehicle = require('../models/vehicle');
 
-// Create a new vehicle
-const createVehicle = async (req, res) => {
-  const vehicle = await Vehicle.create({
-    make: req.body.make,
-    model: req.body.model,
-    year: req.body.year,
-    registration_number: req.body.registration_number,
-    updatedBy: req.body.updatedBy,
-    avatar: req.body.avatar,
-    userId: req.user.id
-  });
-
-  res.status(201).json(vehicle);
-};
-
 // Get all vehicles
 const getVehicles = async (req, res) => {
   const vehicles = await Vehicle.findAll();
@@ -77,7 +62,6 @@ const deleteVehicle = async (req, res) => {
 };
 
 module.exports = {
-  createVehicle,
   getVehicles,
   getVehicleById,
   updateVehicle,

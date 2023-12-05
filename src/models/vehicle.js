@@ -17,11 +17,12 @@ const Vehicle = sequelize.define('Vehicle', {
   },
   registration_number: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: false,
+    unique: true
   },
   updatedBy: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: true
   },
   avatar: {
     type: DataTypes.STRING,
