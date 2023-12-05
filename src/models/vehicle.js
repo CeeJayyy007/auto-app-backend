@@ -23,6 +23,10 @@ const Vehicle = sequelize.define('Vehicle', {
     type: DataTypes.INTEGER,
     allowNull: false
   },
+  avatar: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
   deletedAt: {
     type: DataTypes.DATE,
     allowNull: true
