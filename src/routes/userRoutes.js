@@ -97,6 +97,55 @@ usersRouter.put(
   userController.updateUser
 );
 
+/** POST Methods */
+/**
+ * @openapi
+ * '/api/users/{userId}/add-vehicle':
+ *  post:
+ *     tags:
+ *     - User Controller
+ *     summary: Add a vehicle
+ *     parameters:
+ *      - id: userId
+ *        in: path
+ *        description: The unique Id of the user
+ *        required: true
+ *     requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *           schema:
+ *            type: object
+ *            required:
+ *              - make
+ *              - model
+ *              - year
+ *              - registration_number
+ *            properties:
+ *              make:
+ *                type: string
+ *                default: toyota
+ *              model:
+ *                type: string
+ *                default: corolla
+ *              year:
+ *                type: number
+ *                default: 2014
+ *              registration_number:
+ *                type: string
+ *                default: XA123FG
+ *     responses:
+ *      201:
+ *        description: Created
+ *      409:
+ *        description: Conflict
+ *      404:
+ *        description: Not Found
+ *      500:
+ *        description: Server Error
+ */
+usersRouter.post('/:userId/add-vehicle', userController.addUserVehicle);
+
 /** DELETE Methods */
 /**
  * @openapi

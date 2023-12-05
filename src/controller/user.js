@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
+const Vehicle = require('../models/vehicle');
 
 // Create a new user
 const createUser = async (req, res) => {
@@ -22,6 +23,31 @@ const createUser = async (req, res) => {
   delete userWithoutPassword.password;
 
   res.status(201).json(userWithoutPassword);
+};
+
+// Create a new vehicle
+const addUserVehicle = async (req, res) => {
+  const { userId } = req.params;
+
+  // check if user exists
+  const existingUser = await User.findByPk(userId);
+
+  if (!existingUser) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+
+  // Create a new vehicle
+  const vehicle = await Vehicle.create({
+    make: req.body.make,
+    model: req.body.model,
+    year: req.body.year,
+    registration_number: req.body.registration_number,
+    updatedBy: req.body.updatedBy,
+    avatar: req.body.avatar,
+    userId: userId
+  });
+
+  res.status(201).json(vehicle);
 };
 
 // Get all users
@@ -89,4 +115,11 @@ const deleteUser = async (req, res) => {
   res.status(500).json({ error: 'Internal Server Error' });
 };
 
-module.exports = { getUsers, getUserById, createUser, updateUser, deleteUser };
+module.exports = {
+  getUsers,
+  getUserById,
+  createUser,
+  updateUser,
+  deleteUser,
+  addUserVehicle
+};

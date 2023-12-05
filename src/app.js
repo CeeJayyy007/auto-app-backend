@@ -26,7 +26,7 @@ app.use(tokenExtractor);
 app.use('/api', authRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/health-check', healthCheckRouter);
-app.use('/vehicles', vehicleRouter);
+app.use('/api/vehicles', vehicleRouter);
 
 // middleware for testing purposes
 if (process.env.NODE_ENV === 'test') {
