@@ -9,7 +9,7 @@ const authMiddleware = require('../middlewares/authMiddleware');
 /**
  * @openapi
  * '/api/vehicles':
- *  get:
+ * get:
  *     tags:
  *     - Vehicle Controller
  *     summary: Get all vehicles
@@ -38,9 +38,7 @@ vehiclesRouter.get(
  *     summary: Get a vehicle by id
  *     parameters:
  *      - id: vehicleId
- *        in: path
  *        description: The unique Id of the vehicle
- *        required: true
  *     responses:
  *      200:
  *        description: Fetched Successfully
@@ -51,11 +49,7 @@ vehiclesRouter.get(
  *      500:
  *        description: Server Error
  */
-vehiclesRouter.get(
-  '/:vehicleId',
-  authMiddleware.userExtractor,
-  vehicleController.getVehicleById
-);
+vehiclesRouter.get('/:vehicleId', vehicleController.getVehicleById);
 
 /**
  * @openapi
