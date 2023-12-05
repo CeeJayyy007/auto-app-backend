@@ -22,6 +22,13 @@ const isValidPassword = (password) => {
   return passwordRegex.test(password);
 };
 
+const sanitizeUserData = (user) => {
+  const sanitizedUserData = user.toJSON();
+  delete sanitizedUserData.password;
+  delete sanitizedUserData.deletedAt;
+  return sanitizedUserData;
+};
+
 const register = async (req, res) => {
   const { email, password } = req.body;
 
@@ -51,19 +58,25 @@ const register = async (req, res) => {
   });
 
   // Exclude the password field from the response
-  const userWithoutPassword = newUser.toJSON();
-  delete userWithoutPassword.password;
+  const sanitizedUser = sanitizeUserData(newUser);
 
   // Generate and send an authentication token
-  const token = generateToken(userWithoutPassword);
-  res.status(201).send({ token, user: userWithoutPassword });
+  const token = generateToken(sanitizedUser);
+  res.status(201).send({ token, user: sanitizedUser });
 };
 
 const login = async (req, res) => {
   const { email, password } = req.body;
 
   // Find the user with the given email
-  const user = await User.findOne({ where: { email } });
+  const user = await User.findOne({
+    where: { email },
+    attributes: { include: ['password'] }
+  });
+
+  if (!user) {
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
 
   // Compare the provided password with the hashed password in the database
   const passwordMatch = await bcrypt.compare(password, user.password);
@@ -73,12 +86,11 @@ const login = async (req, res) => {
   }
 
   // Exclude the password field from the response
-  const userWithoutPassword = user.toJSON();
-  delete userWithoutPassword.password;
+  const sanitizedUser = sanitizeUserData(user);
 
   // Generate and send an authentication token
-  const token = generateToken(userWithoutPassword);
-  res.status(200).json({ token, user: userWithoutPassword });
+  const token = generateToken(user);
+  res.status(200).json({ token, user: sanitizedUser });
 };
 
 module.exports = { register, login };

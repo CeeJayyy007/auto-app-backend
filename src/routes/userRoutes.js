@@ -23,7 +23,7 @@ const authMiddleware = require('../middlewares/authMiddleware');
  *      500:
  *        description: Server Error
  */
-usersRouter.get('/', authMiddleware.userExtractor, userController.getUsers);
+usersRouter.get('/', userController.getUsers);
 
 /**
  * @openapi
@@ -109,7 +109,6 @@ usersRouter.put(
  *      - id: userId
  *        in: path
  *        description: The unique Id of the user
- *        required: true
  *     requestBody:
  *      required: true
  *      content:
@@ -145,6 +144,57 @@ usersRouter.put(
  *        description: Server Error
  */
 usersRouter.post('/:userId/add-vehicle', userController.addUserVehicle);
+
+/** POST Methods */
+/**
+ * @openapi
+ * '/api/users/{userId}/create-appointment':
+ *  post:
+ *     tags:
+ *     - User Controller
+ *     summary: Create an appointment
+ *     parameters:
+ *      - id: userId
+ *        in: path
+ *        description: The unique Id of the user
+ *        required: true
+ *     requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *           schema:
+ *            type: object
+ *            required:
+ *              - date
+ *              - time
+ *              - note
+ *            properties:
+ *              date:
+ *                type: string
+ *                default: 2021-01-01
+ *              time:
+ *                type: string
+ *                default: 2:00 PM
+ *             request:
+ *                type: string
+ *                default: oil change, tire rotation
+ *              note:
+ *                type: string
+ *                default: This is a note
+ *     responses:
+ *      201:
+ *        description: Created
+ *      409:
+ *        description: Conflict
+ *      404:
+ *        description: Not Found
+ *      500:
+ *        description: Server Error
+ */
+usersRouter.post(
+  '/:userId/create-appointment',
+  userController.createAppointment
+);
 
 /** DELETE Methods */
 /**

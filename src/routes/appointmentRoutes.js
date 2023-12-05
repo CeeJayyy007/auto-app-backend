@@ -1,18 +1,18 @@
-const vehicleController = require('../controller/vehicle');
+const appointmentController = require('../controller/appointment');
 const bodyParser = require('body-parser');
-const vehiclesRouter = require('express').Router();
-vehiclesRouter.use(bodyParser.json());
+const appointmentsRouter = require('express').Router();
+appointmentsRouter.use(bodyParser.json());
 const authMiddleware = require('../middlewares/authMiddleware');
 
-// vehicle routes
+// appointment routes
 /** GET Methods */
 /**
  * @openapi
- * '/api/vehicles':
+ * '/api/appointments':
  * get:
  *     tags:
- *     - Vehicle Controller
- *     summary: Get all vehicles
+ *     - Appointment Controller
+ *     summary: Get all appointments
  *     responses:
  *      200:
  *        description: Fetched Successfully
@@ -23,45 +23,19 @@ const authMiddleware = require('../middlewares/authMiddleware');
  *      500:
  *        description: Server Error
  */
-vehiclesRouter.get(
-  '/',
-  authMiddleware.userExtractor,
-  vehicleController.getVehicles
-);
+appointmentsRouter.get('/', appointmentController.getAppointments);
 
 /**
  * @openapi
- * '/api/vehicles/{vehicleId}':
- *  get:
+ * '/api/appointments/{appointmentId}':
+ * get:
  *     tags:
- *     - Vehicle Controller
- *     summary: Get a vehicle by id
+ *     - Appointment Controller
+ *     summary: Get a appointment by id
  *     parameters:
- *      - id: vehicleId
- *        description: The unique Id of the vehicle
- *     responses:
- *      200:
- *        description: Fetched Successfully
- *      400:
- *        description: Bad Request
- *      404:
- *        description: Not Found
- *      500:
- *        description: Server Error
- */
-vehiclesRouter.get('/:vehicleId', vehicleController.getVehicleById);
-
-/**
- * @openapi
- * '/api/vehicles/{vehicleId}/user':
- *  get:
- *     tags:
- *     - Vehicle Controller
- *     summary: Get a vehicle and the user associated with it
- *     parameters:
- *      - id: vehicleId
+ *      - id: appointmentId
  *        in: path
- *        description: The unique Id of the vehicle
+ *        description: The unique Id of the appointment
  *        required: true
  *     responses:
  *      200:
@@ -73,16 +47,47 @@ vehiclesRouter.get('/:vehicleId', vehicleController.getVehicleById);
  *      500:
  *        description: Server Error
  */
-vehiclesRouter.get('/:vehicleId/user', vehicleController.getVehicleAndUser);
+appointmentsRouter.get(
+  '/:appointmentId',
+  authMiddleware.userExtractor,
+  appointmentController.getAppointmentById
+);
+
+/**
+ * @openapi
+ * '/api/appointment/{appointmentId}/user':
+ *  get:
+ *     tags:
+ *     - Appointment Controller
+ *     summary: Get an appointment and the user associated with it
+ *     parameters:
+ *      - id: appointmentId
+ *        in: path
+ *        description: The unique Id of the appointment
+ *        required: true
+ *     responses:
+ *      200:
+ *        description: Fetched Successfully
+ *      400:
+ *        description: Bad Request
+ *      404:
+ *        description: Not Found
+ *      500:
+ *        description: Server Error
+ */
+appointmentsRouter.get(
+  '/:appointmentId/user',
+  appointmentController.getAppointmentAndUser
+);
 
 /** PUT Methods */
 /**
  * @openapi
- * '/api/vehicles/{vehicleId}':
- *  put:
+ * '/api/appointments/{appointmentId}':
+ * put:
  *     tags:
- *     - Vehicle Controller
- *     summary: Modify a vehicle
+ *     - Appointment Controller
+ *     summary: Modify a appointment
  *     requestBody:
  *      required: true
  *      content:
@@ -90,20 +95,17 @@ vehiclesRouter.get('/:vehicleId/user', vehicleController.getVehicleAndUser);
  *           schema:
  *            type: object
  *            required:
- *              - vehicleId
+ *              - appointmentId
  *            properties:
- *              make:
+ *              date:
  *                type: string
  *                default: ''
- *              model:
+ *              time:
  *                type: string
  *                default: ''
- *              year:
+ *              note:
  *                type: string
  *                default: ''
- *             registration_number:
- *               type: string
- *              default: ''
  *     responses:
  *      200:
  *        description: Modified
@@ -114,24 +116,24 @@ vehiclesRouter.get('/:vehicleId/user', vehicleController.getVehicleAndUser);
  *      500:
  *        description: Server Error
  */
-vehiclesRouter.put(
-  '/:vehicleId',
+appointmentsRouter.put(
+  '/:appointmentId',
   authMiddleware.userExtractor,
-  vehicleController.updateVehicle
+  appointmentController.updateAppointment
 );
 
 /** DELETE Methods */
 /**
  * @openapi
- * '/api/vehicles/{vehicleId}':
+ * '/api/appointments/{appointmentId}':
  *  delete:
  *     tags:
- *     - Vehicle Controller
- *     summary: Delete vehicle by Id
+ *     - Appointment Controller
+ *     summary: Delete appointment by Id
  *     parameters:
- *      - name: vehicleId
+ *      - name: appointmentId
  *        in: path
- *        description: The unique Id of the vehicle
+ *        description: The unique Id of the appointment
  *        required: true
  *     responses:
  *      200:
@@ -143,10 +145,10 @@ vehiclesRouter.put(
  *      500:
  *        description: Server Error
  */
-vehiclesRouter.delete(
-  '/:vehicleId',
+appointmentsRouter.delete(
+  '/:appointmentId',
   authMiddleware.userExtractor,
-  vehicleController.deleteVehicle
+  appointmentController.deleteAppointment
 );
 
-module.exports = vehiclesRouter;
+module.exports = appointmentsRouter;

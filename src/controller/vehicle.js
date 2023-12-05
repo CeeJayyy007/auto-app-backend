@@ -8,7 +8,10 @@ const getVehicles = async (req, res) => {
 
 // Get a specific vehicle by ID
 const getVehicleById = async (req, res) => {
-  const vehicle = req.vehicle;
+  const { vehicleId } = req.params;
+
+  // check if vehicle exists
+  const vehicle = await Vehicle.findByPk(vehicleId);
 
   if (!vehicle) {
     res.status(404).json({ error: 'Vehicle not found' });
@@ -19,7 +22,10 @@ const getVehicleById = async (req, res) => {
 
 // Get a vehicle and the user associated with it
 const getVehicleAndUser = async (req, res) => {
-  const vehicle = req.vehicle;
+  const { vehicleId } = req.params;
+
+  // check if vehicle exists
+  const vehicle = await Vehicle.findByPk(vehicleId);
 
   if (!vehicle) {
     res.status(404).json({ error: 'Vehicle not found' });
@@ -27,12 +33,16 @@ const getVehicleAndUser = async (req, res) => {
   }
 
   const user = await vehicle.getUser();
+
   res.status(200).json({ vehicle, user });
 };
 
 // Update a vehicle by ID
 const updateVehicle = async (req, res) => {
-  const vehicle = req.vehicle;
+  const { vehicleId } = req.params;
+
+  // check if vehicle exists
+  const vehicle = await Vehicle.findByPk(vehicleId);
 
   if (!vehicle) {
     res.status(404).json({ error: 'Vehicle not found' });
@@ -41,7 +51,7 @@ const updateVehicle = async (req, res) => {
 
   // Update the vehicle
   const [updatedRows] = await Vehicle.update(req.body, {
-    where: { id: req.params.vehicleId }
+    where: { id: vehicleId }
   });
 
   res.status(200).json(updatedRows);
@@ -49,7 +59,10 @@ const updateVehicle = async (req, res) => {
 
 // Delete a vehicle by ID
 const deleteVehicle = async (req, res) => {
-  const vehicle = req.vehicle;
+  const { vehicleId } = req.params;
+
+  // check if vehicle exists
+  const vehicle = await Vehicle.findByPk(vehicleId);
 
   if (!vehicle) {
     res.status(404).json({ error: 'Vehicle not found' });

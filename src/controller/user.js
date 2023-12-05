@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const Vehicle = require('../models/vehicle');
+const Appointment = require('../models/appointment');
 
 // Create a new user
 const createUser = async (req, res) => {
@@ -18,11 +19,7 @@ const createUser = async (req, res) => {
     avatar: null // Set the avatar to null for now (add default avatar later)
   });
 
-  // Exclude the password field from the response
-  const userWithoutPassword = newUser.toJSON();
-  delete userWithoutPassword.password;
-
-  res.status(201).json(userWithoutPassword);
+  res.status(201).json({ user: newUser });
 };
 
 // Create a new vehicle
@@ -42,12 +39,34 @@ const addUserVehicle = async (req, res) => {
     model: req.body.model,
     year: req.body.year,
     registration_number: req.body.registration_number,
-    updatedBy: req.body.updatedBy,
     avatar: req.body.avatar,
     userId: userId
   });
 
   res.status(201).json(vehicle);
+};
+
+// Create a new appointment
+const createAppointment = async (req, res) => {
+  const { userId } = req.params;
+
+  // check if user exists
+  const existingUser = await User.findByPk(userId);
+
+  if (!existingUser) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+
+  // Create a new appointment
+  const appointment = await Appointment.create({
+    date: req.body.date,
+    time: req.body.time,
+    serviceRequest: req.body.serviceRequest,
+    note: req.body.note,
+    userId: userId
+  });
+
+  res.status(201).json(appointment);
 };
 
 // Get all users
@@ -58,7 +77,10 @@ const getUsers = async (req, res) => {
 
 // Get a specific user by ID
 const getUserById = async (req, res) => {
-  const user = req.user;
+  const { userId } = req.params;
+
+  // check if user exists
+  const user = await User.findByPk(userId);
 
   if (!user) {
     res.status(404).json({ error: 'User not found' });
@@ -70,11 +92,6 @@ const getUserById = async (req, res) => {
 // Update a user by ID
 const updateUser = async (req, res) => {
   const user = req.user;
-
-  if (!existingUser) {
-    res.status(404).json({ error: 'User not found' });
-    return;
-  }
 
   // Hash the new password before updating (if provided)
   if (req.body.password) {
@@ -93,26 +110,33 @@ const updateUser = async (req, res) => {
   }
 
   // Get the updated user record
-  const updatedUser = await User.findByPk(req.params.userId);
+  const updatedUser = await User.findByPk(user.id);
 
   res.status(200).json(updatedUser);
 };
 
 // Delete a user by ID
 const deleteUser = async (req, res) => {
-  const user = req.user;
+  const { userId } = req.params;
+
+  // check if user exists
+  const user = await User.findByPk(userId);
+
+  if (!user) {
+    res.status(404).json({ error: 'User not found' });
+    return;
+  }
 
   const deletedRows = await User.destroy({
     where: { id: user.id }
   });
+
   if (deletedRows === 0) {
     res.status(404).json({ error: 'User not found' });
     return;
   }
-  res.status(200).json({ message: 'User deleted successfully' });
 
-  console.error(error);
-  res.status(500).json({ error: 'Internal Server Error' });
+  res.status(200).json({ message: 'User deleted successfully' });
 };
 
 module.exports = {
@@ -121,5 +145,6 @@ module.exports = {
   createUser,
   updateUser,
   deleteUser,
-  addUserVehicle
+  addUserVehicle,
+  createAppointment
 };
