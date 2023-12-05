@@ -23,6 +23,11 @@ const userExtractor = async (req, res, next) => {
   // get user from token
   const user = await User.findByPk(decodedToken.userId);
 
+  // check if user exists
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+
   req.user = user;
 
   next();
