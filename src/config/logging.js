@@ -1,6 +1,6 @@
 const appRoot = require('app-root-path');
 const winston = require('winston');
-const { combine, colorize, timestamp, json } = winston.format;
+const { combine, timestamp, json } = winston.format;
 const morgan = require('morgan');
 require('winston-daily-rotate-file');
 
