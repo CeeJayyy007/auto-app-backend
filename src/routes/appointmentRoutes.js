@@ -3,6 +3,10 @@ const bodyParser = require('body-parser');
 const appointmentsRouter = require('express').Router();
 appointmentsRouter.use(bodyParser.json());
 const authMiddleware = require('../middlewares/authMiddleware');
+const {
+  validateAppointmentsId,
+  validateAppointments
+} = require('../middlewares/validations/validateAppointments');
 
 // appointment routes
 /** GET Methods */
@@ -50,6 +54,7 @@ appointmentsRouter.get('/', appointmentController.getAppointments);
 appointmentsRouter.get(
   '/:appointmentId',
   authMiddleware.userExtractor,
+  validateAppointmentsId,
   appointmentController.getAppointmentById
 );
 
@@ -77,6 +82,7 @@ appointmentsRouter.get(
  */
 appointmentsRouter.get(
   '/:appointmentId/user',
+  validateAppointmentsId,
   appointmentController.getAppointmentAndUser
 );
 
@@ -119,6 +125,8 @@ appointmentsRouter.get(
 appointmentsRouter.put(
   '/:appointmentId',
   authMiddleware.userExtractor,
+  validateAppointmentsId,
+  validateAppointments,
   appointmentController.updateAppointment
 );
 
@@ -148,6 +156,7 @@ appointmentsRouter.put(
 appointmentsRouter.delete(
   '/:appointmentId',
   authMiddleware.userExtractor,
+  validateAppointmentsId,
   appointmentController.deleteAppointment
 );
 

@@ -2,20 +2,24 @@ const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const Vehicle = require('../models/vehicle');
 const Appointment = require('../models/appointment');
+const logger = require('../config/logging');
 
 // Create a new user
 const createUser = async (req, res) => {
+  const { email, password, firstName, lastName, username, phone } =
+    req.validatedData;
+
   // Hash the password before storing it
-  const hashedPassword = await bcrypt.hash(req.body.password, 10);
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   // Create a new user with the hashed password
   const newUser = await User.create({
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    username: req.body.username,
-    email: req.body.email,
+    firstName: firstName,
+    lastName: lastName,
+    username: username,
+    email: email,
     password: hashedPassword,
-    phone: req.body.phone,
+    phone: phone,
     avatar: null // Set the avatar to null for now (add default avatar later)
   });
 
@@ -24,7 +28,8 @@ const createUser = async (req, res) => {
 
 // Create a new vehicle
 const addUserVehicle = async (req, res) => {
-  const { userId } = req.params;
+  const { make, model, year, registration_number } = req.validatedData;
+  const { userId } = req.validatedUserId;
 
   // check if user exists
   const existingUser = await User.findByPk(userId);
@@ -35,11 +40,11 @@ const addUserVehicle = async (req, res) => {
 
   // Create a new vehicle
   const vehicle = await Vehicle.create({
-    make: req.body.make,
-    model: req.body.model,
-    year: req.body.year,
-    registration_number: req.body.registration_number,
-    avatar: req.body.avatar,
+    make: make,
+    model: model,
+    year: year,
+    registration_number: registration_number,
+    avatar: null, // Set the avatar to null for now (add default avatar later)
     userId: userId
   });
 
@@ -48,7 +53,8 @@ const addUserVehicle = async (req, res) => {
 
 // Create a new appointment
 const createAppointment = async (req, res) => {
-  const { userId } = req.params;
+  const { date, time, serviceRequest, note } = req.validatedData;
+  const { userId } = req.validatedUserId;
 
   // check if user exists
   const existingUser = await User.findByPk(userId);
@@ -57,12 +63,32 @@ const createAppointment = async (req, res) => {
     return res.status(404).json({ error: 'User not found' });
   }
 
+  // check if appointment exists
+  const existingAppointment = await Appointment.findOne({
+    where: { date: date, time: time }
+  });
+
+  if (existingAppointment) {
+    return res.status(409).json({ error: 'Appointment already exists' });
+  }
+
+  // limit number of appointments to 3 per day
+  const appointments = await Appointment.findAll({
+    where: { date: date }
+  });
+
+  if (appointments.length >= 3) {
+    return res
+      .status(409)
+      .json({ error: 'Appointment limit reached for this day' });
+  }
+
   // Create a new appointment
   const appointment = await Appointment.create({
-    date: req.body.date,
-    time: req.body.time,
-    serviceRequest: req.body.serviceRequest,
-    note: req.body.note,
+    date: date,
+    time: time,
+    serviceRequest: serviceRequest,
+    note: note,
     userId: userId
   });
 

@@ -1,36 +1,14 @@
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-
-const generateToken = (user) => {
-  const token = jwt.sign(
-    {
-      userId: user.id,
-      email: user.email
-    },
-    process.env.SECRET,
-    { expiresIn: 60 * 60 }
-  );
-  return token;
-};
-
-const isValidPassword = (password) => {
-  // Add your password rules here (e.g., minimum length, special characters, etc.)
-  const passwordRegex =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-
-  return passwordRegex.test(password);
-};
-
-const sanitizeUserData = (user) => {
-  const sanitizedUserData = user.toJSON();
-  delete sanitizedUserData.password;
-  delete sanitizedUserData.deletedAt;
-  return sanitizedUserData;
-};
+const {
+  isValidPassword,
+  sanitizeUserData,
+  generateToken
+} = require('../middlewares/authMiddleware');
 
 const register = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, firstName, lastName, username, phone } =
+    req.validatedData;
 
   // Check if the password meets the minimum requirements
   if (!isValidPassword(password)) {
@@ -48,12 +26,12 @@ const register = async (req, res) => {
 
   // Create a new user with the hashed password
   const newUser = await User.create({
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    username: req.body.username,
-    email: req.body.email,
+    firstName: firstName,
+    lastName: lastName,
+    username: username,
+    email: email,
     password: hashedPassword,
-    phone: req.body.phone,
+    phone: phone,
     avatar: null // Set the avatar to null for now (add default avatar later),
   });
 
@@ -66,7 +44,7 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password } = req.validatedData;
 
   // Find the user with the given email
   const user = await User.findOne({

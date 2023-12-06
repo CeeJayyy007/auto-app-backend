@@ -8,7 +8,7 @@ const getAppointments = async (req, res) => {
 
 // Get a specific appointment by ID
 const getAppointmentById = async (req, res) => {
-  const { appointmentId } = req.params;
+  const { appointmentId } = req.validatedAppointmentId;
 
   // check if appointment exists
   const appointment = await Appointment.findByPk(appointmentId);
@@ -22,7 +22,7 @@ const getAppointmentById = async (req, res) => {
 
 // Get a appointment and the user associated with it
 const getAppointmentAndUser = async (req, res) => {
-  const { appointmentId } = req.params;
+  const { appointmentId } = req.validatedAppointmentId;
 
   // check if appointment exists
   const appointment = await Appointment.findByPk(appointmentId);
@@ -38,7 +38,7 @@ const getAppointmentAndUser = async (req, res) => {
 
 // Update an appointment by ID
 const updateAppointment = async (req, res) => {
-  const { appointmentId } = req.params;
+  const { appointmentId } = req.validatedAppointmentId;
 
   // check if appointment exists
   const appointment = await Appointment.findByPk(appointmentId);
@@ -57,7 +57,7 @@ const updateAppointment = async (req, res) => {
   }
 
   // Update the appointment
-  const [updatedRows] = await Appointment.update(req.body, {
+  const [updatedRows] = await Appointment.update(req.validatedData, {
     where: { id: appointmentId }
   });
 
@@ -66,7 +66,7 @@ const updateAppointment = async (req, res) => {
 
 // Delete an appointment by ID
 const deleteAppointment = async (req, res) => {
-  const { appointmentId } = req.params;
+  const { appointmentId } = req.validatedAppointmentId;
 
   // check if appointment exists
   const appointment = await Appointment.findByPk(appointmentId);

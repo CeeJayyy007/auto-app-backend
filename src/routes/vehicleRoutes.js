@@ -3,6 +3,10 @@ const bodyParser = require('body-parser');
 const vehiclesRouter = require('express').Router();
 vehiclesRouter.use(bodyParser.json());
 const authMiddleware = require('../middlewares/authMiddleware');
+const {
+  validateVehicleId,
+  validateVehicle
+} = require('../middlewares/validations/validateVehicle');
 
 // vehicle routes
 /** GET Methods */
@@ -49,7 +53,11 @@ vehiclesRouter.get(
  *      500:
  *        description: Server Error
  */
-vehiclesRouter.get('/:vehicleId', vehicleController.getVehicleById);
+vehiclesRouter.get(
+  '/:vehicleId',
+  validateVehicleId,
+  vehicleController.getVehicleById
+);
 
 /**
  * @openapi
@@ -73,7 +81,11 @@ vehiclesRouter.get('/:vehicleId', vehicleController.getVehicleById);
  *      500:
  *        description: Server Error
  */
-vehiclesRouter.get('/:vehicleId/user', vehicleController.getVehicleAndUser);
+vehiclesRouter.get(
+  '/:vehicleId/user',
+  validateVehicleId,
+  vehicleController.getVehicleAndUser
+);
 
 /** PUT Methods */
 /**
@@ -117,6 +129,8 @@ vehiclesRouter.get('/:vehicleId/user', vehicleController.getVehicleAndUser);
 vehiclesRouter.put(
   '/:vehicleId',
   authMiddleware.userExtractor,
+  validateVehicleId,
+  validateVehicle,
   vehicleController.updateVehicle
 );
 
@@ -146,6 +160,7 @@ vehiclesRouter.put(
 vehiclesRouter.delete(
   '/:vehicleId',
   authMiddleware.userExtractor,
+  validateVehicleId,
   vehicleController.deleteVehicle
 );
 
