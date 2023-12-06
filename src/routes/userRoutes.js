@@ -13,6 +13,9 @@ const validateUserId = require('../middlewares/validations/validateUser');
 const {
   validateAppointments
 } = require('../middlewares/validations/validateAppointments');
+const {
+  validateInventory
+} = require('../middlewares/validations/validateInventory');
 
 // user routes
 /** GET Methods */
@@ -160,7 +163,6 @@ usersRouter.post(
   userController.addUserVehicle
 );
 
-/** POST Methods */
 /**
  * @openapi
  * '/api/users/{userId}/create-appointment':
@@ -190,12 +192,73 @@ usersRouter.post(
  *              time:
  *                type: string
  *                default: 2:00 PM
- *             request:
+ *              request:
  *                type: string
  *                default: oil change, tire rotation
  *              note:
  *                type: string
  *                default: This is a note
+ *     responses:
+ *       201:
+ *         description: Created
+ *       409:
+ *         description: Conflict
+ *       404:
+ *         description: Not Found
+ *       500:
+ *         description: Server Error
+ */
+usersRouter.post(
+  '/:userId/create-appointment',
+  validateUserId,
+  validateAppointments,
+  userController.createAppointment
+);
+
+/**
+ * @openapi
+ * '/api/users/{userId}/create-inventory':
+ *  post:
+ *     tags:
+ *     - User Controller
+ *     summary: Create an inventory item
+ *     parameters:
+ *      - id: userId
+ *        in: path
+ *        description: The unique Id of the user
+ *        required: true
+ *     requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *           schema:
+ *            type: object
+ *            required:
+ *              - name
+ *              - quantity
+ *              - lowLevel
+ *              - initialPrice
+ *              - markUp
+ *              - finalPrice
+ *            properties:
+ *              name:
+ *                type: string
+ *                default: tyre
+ *              quantity:
+ *                type: number
+ *                default: 2
+ *              lowLevel:
+ *                type: number
+ *                default: 1
+ *              initialPrice:
+ *                type: integer
+ *                default: 2000
+ *              markUp:
+ *                type: integer
+ *                default: 2
+ *              finalPrice:
+ *                type: integer
+ *                default: 4000
  *     responses:
  *      201:
  *        description: Created
@@ -207,10 +270,11 @@ usersRouter.post(
  *        description: Server Error
  */
 usersRouter.post(
-  '/:userId/create-appointment',
+  '/:userId/create-inventory',
+  authMiddleware.userExtractor,
   validateUserId,
-  validateAppointments,
-  userController.createAppointment
+  validateInventory,
+  userController.createInventory
 );
 
 /** DELETE Methods */
