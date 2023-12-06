@@ -13,7 +13,7 @@ const {
 /**
  * @openapi
  * '/api/vehicles':
- * get:
+ *  get:
  *     tags:
  *     - Vehicle Controller
  *     summary: Get all vehicles
@@ -106,25 +106,25 @@ vehiclesRouter.get(
  *            properties:
  *              make:
  *                type: string
- *                default: ''
+ *                default: Toyota
  *              model:
  *                type: string
- *                default: ''
+ *                default: Corolla
  *              year:
  *                type: string
- *                default: ''
- *             registration_number:
- *               type: string
- *              default: ''
+ *                default: 2016
+ *              registration_number:
+ *                type: string
+ *                default: XA123EBD
  *     responses:
- *      200:
- *        description: Modified
- *      400:
- *        description: Bad Request
- *      404:
- *        description: Not Found
- *      500:
- *        description: Server Error
+ *       200:
+ *          description: Modified
+ *       400:
+ *         description: Bad Request
+ *       404:
+ *         description: Not Found
+ *       500:
+ *         description: Server Error
  */
 vehiclesRouter.put(
   '/:vehicleId',

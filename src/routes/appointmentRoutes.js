@@ -13,35 +13,35 @@ const {
 /**
  * @openapi
  * '/api/appointments':
- * get:
- *     tags:
- *     - Appointment Controller
- *     summary: Get all appointments
- *     responses:
- *      200:
- *        description: Fetched Successfully
- *      400:
- *        description: Bad Request
- *      404:
- *        description: Not Found
- *      500:
- *        description: Server Error
+ *  get:
+ *    tags:
+ *    - Appointment Controller
+ *    summary: Get all appointments
+ *    responses:
+ *     200:
+ *       description: Fetched Successfully
+ *     400:
+ *       description: Bad Request
+ *     404:
+ *       description: Not Found
+ *     500:
+ *       description: Server Error
  */
 appointmentsRouter.get('/', appointmentController.getAppointments);
 
 /**
  * @openapi
  * '/api/appointments/{appointmentId}':
- * get:
- *     tags:
- *     - Appointment Controller
- *     summary: Get a appointment by id
- *     parameters:
- *      - id: appointmentId
- *        in: path
- *        description: The unique Id of the appointment
- *        required: true
- *     responses:
+ *  get:
+ *    tags:
+ *    - Appointment Controller
+ *    summary: Get a appointment by id
+ *    parameters:
+ *     - id: appointmentId
+ *       in: path
+ *       description: The unique Id of the appointment
+ *       required: true
+ *    responses:
  *      200:
  *        description: Fetched Successfully
  *      400:
@@ -90,7 +90,7 @@ appointmentsRouter.get(
 /**
  * @openapi
  * '/api/appointments/{appointmentId}':
- * put:
+ *  put:
  *     tags:
  *     - Appointment Controller
  *     summary: Modify a appointment

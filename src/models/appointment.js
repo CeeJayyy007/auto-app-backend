@@ -31,7 +31,7 @@ const Appointment = sequelize.define(
     }
   },
   {
-    // Exclude password field by default when converting to JSON
+    // Exclude deletedAt field by default when converting to JSON
     defaultScope: {
       attributes: { exclude: ['deletedAt'] }
     }
