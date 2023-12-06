@@ -33,7 +33,40 @@ const userExtractor = async (req, res, next) => {
   next();
 };
 
+// add token generator
+const generateToken = (user) => {
+  const token = jwt.sign(
+    {
+      userId: user.id,
+      email: user.email
+    },
+    process.env.SECRET,
+    { expiresIn: 60 * 60 }
+  );
+  return token;
+};
+
+// add password validator
+const isValidPassword = (password) => {
+  // pasword rule: 1 uppercase, 1 lowercase, 1 number, 1 special character, min 8 characters
+  const passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+  return passwordRegex.test(password);
+};
+
+// add user data sanitizer
+const sanitizeUserData = (user) => {
+  const sanitizedUserData = user.toJSON();
+  delete sanitizedUserData.password;
+  delete sanitizedUserData.deletedAt;
+  return sanitizedUserData;
+};
+
 module.exports = {
   tokenExtractor,
-  userExtractor
+  userExtractor,
+  generateToken,
+  isValidPassword,
+  sanitizeUserData
 };
