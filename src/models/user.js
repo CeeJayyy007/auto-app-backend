@@ -42,13 +42,23 @@ const User = sequelize.define(
         is: /^\+?[1-9]\d{1,14}$/ // Regular expression to validate phone number format
       }
     },
+    roles: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: 'user',
+      values: ['admin', 'superAdmin', 'user']
+    },
+    permissions: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      allowNull: true
+    },
     deletedAt: {
       type: DataTypes.DATE,
       allowNull: true
     }
   },
   {
-    // Exclude password field by default when converting to JSON
+    // Exclude password and deletedAt fields by default when converting to JSON
     defaultScope: {
       attributes: { exclude: ['password', 'deletedAt'] }
     }
