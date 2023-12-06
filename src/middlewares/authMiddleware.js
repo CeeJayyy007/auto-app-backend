@@ -55,6 +55,17 @@ const isValidPassword = (password) => {
   return passwordRegex.test(password);
 };
 
+// check if user has admin or superAdmin role
+const checkUserRole = (existingUser, res) => {
+  if (existingUser.roles === 'user') {
+    return res
+      .status(401)
+      .json({ error: 'You are not authorized to create an inventory' });
+  }
+
+  return true;
+};
+
 // add user data sanitizer
 const sanitizeUserData = (user) => {
   const sanitizedUserData = user.toJSON();
@@ -68,5 +79,6 @@ module.exports = {
   userExtractor,
   generateToken,
   isValidPassword,
-  sanitizeUserData
+  sanitizeUserData,
+  checkUserRole
 };
