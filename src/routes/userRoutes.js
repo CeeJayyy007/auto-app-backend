@@ -3,6 +3,16 @@ const bodyParser = require('body-parser');
 const usersRouter = require('express').Router();
 usersRouter.use(bodyParser.json());
 const authMiddleware = require('../middlewares/authMiddleware');
+const {
+  validateRegistration
+} = require('../middlewares/validations/validateAuth');
+const {
+  validateVehicle
+} = require('../middlewares/validations/validateVehicle');
+const validateUserId = require('../middlewares/validations/validateUser');
+const {
+  validateAppointments
+} = require('../middlewares/validations/validateAppointments');
 
 // user routes
 /** GET Methods */
@@ -53,7 +63,7 @@ usersRouter.get(
   userController.getUserById
 );
 
-usersRouter.post('/', userController.createUser);
+usersRouter.post('/', validateRegistration, userController.createUser);
 
 /** PUT Methods */
 /**
@@ -143,7 +153,12 @@ usersRouter.put(
  *      500:
  *        description: Server Error
  */
-usersRouter.post('/:userId/add-vehicle', userController.addUserVehicle);
+usersRouter.post(
+  '/:userId/add-vehicle',
+  validateVehicle,
+  validateUserId,
+  userController.addUserVehicle
+);
 
 /** POST Methods */
 /**
@@ -193,6 +208,8 @@ usersRouter.post('/:userId/add-vehicle', userController.addUserVehicle);
  */
 usersRouter.post(
   '/:userId/create-appointment',
+  validateUserId,
+  validateAppointments,
   userController.createAppointment
 );
 

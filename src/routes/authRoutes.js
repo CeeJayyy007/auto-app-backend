@@ -2,6 +2,10 @@ const authController = require('../controller/auth');
 const bodyParser = require('body-parser');
 const authRouter = require('express').Router();
 authRouter.use(bodyParser.json());
+const {
+  validateRegistration,
+  validateLogin
+} = require('../middlewares/validations/validateAuth');
 
 // auth routes
 /**
@@ -37,7 +41,7 @@ authRouter.use(bodyParser.json());
  *      500:
  *        description: Server Error
  */
-authRouter.post('/login', authController.login);
+authRouter.post('/login', validateLogin, authController.login);
 
 /** POST Methods */
 /**
@@ -91,6 +95,6 @@ authRouter.post('/login', authController.login);
  *        description: Server Error
  */
 
-authRouter.post('/register', authController.register);
+authRouter.post('/register', validateRegistration, authController.register);
 
 module.exports = authRouter;
