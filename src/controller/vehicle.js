@@ -8,7 +8,7 @@ const getVehicles = async (req, res) => {
 
 // Get a specific vehicle by ID
 const getVehicleById = async (req, res) => {
-  const { vehicleId } = req.params;
+  const { vehicleId } = req.validatedVehicleId;
 
   // check if vehicle exists
   const vehicle = await Vehicle.findByPk(vehicleId);
@@ -22,7 +22,7 @@ const getVehicleById = async (req, res) => {
 
 // Get a vehicle and the user associated with it
 const getVehicleAndUser = async (req, res) => {
-  const { vehicleId } = req.params;
+  const { vehicleId } = req.validatedVehicleId;
 
   // check if vehicle exists
   const vehicle = await Vehicle.findByPk(vehicleId);
@@ -39,7 +39,7 @@ const getVehicleAndUser = async (req, res) => {
 
 // Update a vehicle by ID
 const updateVehicle = async (req, res) => {
-  const { vehicleId } = req.params;
+  const { vehicleId } = req.validatedVehicleId;
 
   // check if vehicle exists
   const vehicle = await Vehicle.findByPk(vehicleId);
@@ -50,7 +50,7 @@ const updateVehicle = async (req, res) => {
   }
 
   // Update the vehicle
-  const [updatedRows] = await Vehicle.update(req.body, {
+  const [updatedRows] = await Vehicle.update(req.validatedData, {
     where: { id: vehicleId }
   });
 
@@ -59,7 +59,7 @@ const updateVehicle = async (req, res) => {
 
 // Delete a vehicle by ID
 const deleteVehicle = async (req, res) => {
-  const { vehicleId } = req.params;
+  const { vehicleId } = req.validatedVehicleId;
 
   // check if vehicle exists
   const vehicle = await Vehicle.findByPk(vehicleId);
