@@ -3,6 +3,8 @@ const User = require('../models/user');
 const Vehicle = require('../models/vehicle');
 const Appointment = require('../models/appointment');
 const logger = require('../config/logging');
+const Inventory = require('../models/inventory');
+const { checkUserRole } = require('../middlewares/authMiddleware');
 
 // Create a new user
 const createUser = async (req, res) => {
@@ -95,6 +97,32 @@ const createAppointment = async (req, res) => {
   res.status(201).json(appointment);
 };
 
+// Create a new inventory
+const createInventory = async (req, res) => {
+  const { name } = req.validatedData;
+  const user = req.user;
+
+  // check user role
+  checkUserRole(user, res);
+
+  // check if inventory exists
+  const existingInventory = await Inventory.findOne({
+    where: { name: name }
+  });
+
+  if (existingInventory) {
+    return res.status(409).json({ error: 'Inventory already exists' });
+  }
+
+  // Create a new inventory item
+  const inventory = await Inventory.create({
+    ...req.validatedData,
+    userId: user.id
+  });
+
+  res.status(201).json(inventory);
+};
+
 // Get all users
 const getUsers = async (req, res) => {
   const users = await User.findAll();
@@ -172,5 +200,6 @@ module.exports = {
   updateUser,
   deleteUser,
   addUserVehicle,
-  createAppointment
+  createAppointment,
+  createInventory
 };
