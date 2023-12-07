@@ -50,8 +50,6 @@ const updateInventory = async (req, res) => {
   const { inventoryId } = req.validatedInventoryId;
   const user = req.user;
 
-  console.log('here', user);
-
   // check user role
   checkUserRole(user);
 
@@ -77,7 +75,7 @@ const updateInventory = async (req, res) => {
     return;
   }
 
-  // Get the updated user record
+  // Get the updated inventory record
   const updatedInventory = await Inventory.findByPk(inventoryId);
 
   res.status(200).json({
