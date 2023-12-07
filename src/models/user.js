@@ -50,6 +50,11 @@ const User = sequelize.define(
     },
     permissions: {
       type: DataTypes.ARRAY(DataTypes.STRING),
+      allowNull: true,
+      defaultValue: []
+    },
+    updatedBy: {
+      type: DataTypes.INTEGER,
       allowNull: true
     },
     deletedAt: {
