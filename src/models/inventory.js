@@ -7,7 +7,8 @@ const Inventory = sequelize.define(
   {
     name: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      unique: true
     },
     quantity: {
       type: DataTypes.INTEGER,
