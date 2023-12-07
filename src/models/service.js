@@ -3,6 +3,7 @@ const sequelize = require('../config/database');
 const User = require('./user');
 
 const Service = sequelize.define(
+  'Service',
   {
     name: {
       type: DataTypes.STRING,
