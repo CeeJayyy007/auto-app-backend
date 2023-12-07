@@ -17,12 +17,8 @@ const createUser = async (req, res) => {
 
   // Create a new user with the hashed password
   const newUser = await User.create({
-    firstName: firstName,
-    lastName: lastName,
-    username: username,
-    email: email,
+    ...req.validatedData,
     password: hashedPassword,
-    phone: phone,
     avatar: null // Set the avatar to null for now (add default avatar later)
   });
 
@@ -31,8 +27,8 @@ const createUser = async (req, res) => {
 
 // Create a new vehicle
 const addUserVehicle = async (req, res) => {
-  const { make, model, year, registration_number } = req.validatedData;
   const { userId } = req.validatedUserId;
+  const { registration_number } = req.validatedData;
 
   // check if user exists
   const existingUser = await User.findByPk(userId);
@@ -41,12 +37,18 @@ const addUserVehicle = async (req, res) => {
     return res.status(404).json({ error: 'User not found' });
   }
 
+  // check if vehicle exists
+  const existingVehicle = await Vehicle.findOne({
+    where: { registration_number: registration_number }
+  });
+
+  if (existingVehicle) {
+    return res.status(409).json({ error: 'Vehicle already exists' });
+  }
+
   // Create a new vehicle
   const vehicle = await Vehicle.create({
-    make: make,
-    model: model,
-    year: year,
-    registration_number: registration_number,
+    ...req.validatedData,
     avatar: null, // Set the avatar to null for now (add default avatar later)
     userId: userId
   });
@@ -56,8 +58,7 @@ const addUserVehicle = async (req, res) => {
 
 // Create a new appointment
 const createAppointment = async (req, res) => {
-  const { date, serviceRequest, note, vehicleId } = req.validatedData;
-  const { userId } = req.validatedUserId;
+  const { date, vehicleId } = req.validatedData;
   const user = req.user;
 
   if (!user) {
@@ -69,23 +70,25 @@ const createAppointment = async (req, res) => {
     where: { id: vehicleId }
   });
 
-  if (!vehicle) {
+  if (!vehicle[0]) {
     return res.status(404).json({ error: 'Vehicle not found' });
   }
 
   // check if appointment exists
   const existingAppointment = await Appointment.findOne({
-    where: { date: date, vehicleId: vehicleId }
+    where: { date: date, vehicleId: vehicleId, userId: user.id }
   });
 
   if (existingAppointment) {
     return res.status(409).json({ error: 'Appointment already exists' });
   }
 
-  // limit number of appointments to 3 per day
+  // limit number of appointments to 3 per day (fix this later)
   const appointments = await Appointment.findAll({
-    where: { date: date }
+    where: { date: date, vehicleId: vehicleId, userId: user.id }
   });
+
+  console.log('existing', appointments);
 
   if (appointments.length >= 3) {
     return res
@@ -95,10 +98,8 @@ const createAppointment = async (req, res) => {
 
   // Create a new appointment
   const appointment = await Appointment.create({
-    date: date,
-    serviceRequest: serviceRequest,
-    note: note,
-    userId: userId,
+    ...req.validatedData,
+    userId: user.id,
     vehicleId: vehicleId
   });
 
@@ -129,6 +130,32 @@ const createInventory = async (req, res) => {
   });
 
   res.status(201).json(inventory);
+};
+
+// Create a new service
+const createService = async (req, res) => {
+  const { name } = req.validatedData;
+  const user = req.user;
+
+  // check user role
+  checkUserRole(user);
+
+  // check if service exists
+  const existingService = await Service.findOne({
+    where: { name: name }
+  });
+
+  if (existingService) {
+    return res.status(409).json({ error: 'Service already exists' });
+  }
+
+  // Create a new service
+  const newService = await Service.create({
+    ...req.validatedData,
+    userId: user.id
+  });
+
+  res.status(201).json({ service: newService });
 };
 
 // Get all users
@@ -209,5 +236,6 @@ module.exports = {
   deleteUser,
   addUserVehicle,
   createAppointment,
-  createInventory
+  createInventory,
+  createService
 };

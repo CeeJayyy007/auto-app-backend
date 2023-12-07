@@ -7,7 +7,8 @@ const {
   validateRegistration
 } = require('../middlewares/validations/validateAuth');
 const {
-  validateVehicle
+  validateVehicle,
+  validateVehicleId
 } = require('../middlewares/validations/validateVehicle');
 const validateUserId = require('../middlewares/validations/validateUser');
 const {
@@ -211,7 +212,6 @@ usersRouter.post(
 usersRouter.post(
   '/:userId/create-appointment',
   authMiddleware.userExtractor,
-  validateUserId,
   validateAppointments,
   userController.createAppointment
 );
