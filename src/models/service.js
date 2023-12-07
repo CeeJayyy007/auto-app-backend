@@ -6,7 +6,8 @@ const Service = sequelize.define(
   {
     name: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      unique: true
     },
     description: {
       type: DataTypes.TEXT,
@@ -33,17 +34,12 @@ const Service = sequelize.define(
     // Exclude deletedAt field by default when converting to JSON
     defaultScope: {
       attributes: { exclude: ['deletedAt'] }
-    },
-    hooks: {
-      beforeSave: (service, options) => {
-        return new Promise((resolve) => {
-          // Calculate the finalPrice before saving
-          service.finalPrice = service.initialPrice * service.markUp;
-          resolve();
-        });
-      }
     }
   }
 );
 
 // Define the relationship between Service and User
+User.hasMany(Service, { foreignKey: 'userId' });
+Service.belongsTo(User, { foreignKey: 'userId' });
+
+module.exports = Service;
