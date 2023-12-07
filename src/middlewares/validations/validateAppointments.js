@@ -2,8 +2,8 @@ const joi = require('joi');
 
 const validateAppointmentsSchema = joi.object({
   date: joi.date().required(),
-  time: joi.string().required(),
   note: joi.string().required(),
+  vehicleId: joi.number().required(),
   serviceRequest: joi.array().required()
 });
 
