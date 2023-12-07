@@ -5,7 +5,8 @@ inventoryRouter.use(bodyParser.json());
 const authMiddleware = require('../middlewares/authMiddleware');
 const {
   validateInventoryId,
-  validateInventory
+  validateInventory,
+  validatePartialInventory
 } = require('../middlewares/validations/validateInventory');
 
 // inventory routes
@@ -136,7 +137,7 @@ inventoryRouter.put(
   '/:inventoryId',
   authMiddleware.userExtractor,
   validateInventoryId,
-  validateInventory,
+  validatePartialInventory,
   inventoryController.updateInventory
 );
 

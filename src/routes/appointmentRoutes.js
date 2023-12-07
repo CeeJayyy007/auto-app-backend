@@ -5,7 +5,8 @@ appointmentsRouter.use(bodyParser.json());
 const authMiddleware = require('../middlewares/authMiddleware');
 const {
   validateAppointmentsId,
-  validateAppointments
+  validateAppointments,
+  validatePartialAppointment
 } = require('../middlewares/validations/validateAppointments');
 
 // appointment routes
@@ -126,7 +127,7 @@ appointmentsRouter.put(
   '/:appointmentId',
   authMiddleware.userExtractor,
   validateAppointmentsId,
-  validateAppointments,
+  validatePartialAppointment,
   appointmentController.updateAppointment
 );
 

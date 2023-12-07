@@ -12,6 +12,16 @@ const validateInventoryIdSchema = joi.object({
   inventoryId: joi.number().required()
 });
 
+const validatePartialInventorySchema = joi.object({
+  name: joi.string(),
+  quantity: joi.number(),
+  lowLevel: joi.number(),
+  initialPrice: joi.number(),
+  markUp: joi.number(),
+  updatedBy: joi.number(),
+  deletedAt: joi.date()
+});
+
 const validateInventory = (req, res, next) => {
   const { error, value } = validateInventorySchema.validate(req.body);
 
@@ -34,4 +44,19 @@ const validateInventoryId = (req, res, next) => {
   next();
 };
 
-module.exports = { validateInventory, validateInventoryId };
+const validatePartialInventory = (req, res, next) => {
+  const { error, value } = validatePartialInventorySchema.validate(req.body);
+
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
+  }
+
+  req.validatedPartialInventory = value;
+  next();
+};
+
+module.exports = {
+  validateInventory,
+  validateInventoryId,
+  validatePartialInventory
+};

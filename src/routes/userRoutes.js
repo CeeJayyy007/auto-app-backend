@@ -7,16 +7,21 @@ const {
   validateRegistration
 } = require('../middlewares/validations/validateAuth');
 const {
-  validateVehicle,
-  validateVehicleId
+  validateVehicle
 } = require('../middlewares/validations/validateVehicle');
-const validateUserId = require('../middlewares/validations/validateUser');
 const {
   validateAppointments
 } = require('../middlewares/validations/validateAppointments');
 const {
   validateInventory
 } = require('../middlewares/validations/validateInventory');
+const {
+  validateService
+} = require('../middlewares/validations/validateService');
+const {
+  validatePartialUser,
+  validateUserId
+} = require('../middlewares/validations/validateUser');
 
 // user routes
 /** GET Methods */
@@ -108,6 +113,7 @@ usersRouter.post('/', validateRegistration, userController.createUser);
 usersRouter.put(
   '/:userId',
   authMiddleware.userExtractor,
+  validatePartialUser,
   userController.updateUser
 );
 
@@ -273,9 +279,57 @@ usersRouter.post(
 usersRouter.post(
   '/:userId/create-inventory',
   authMiddleware.userExtractor,
-  validateUserId,
   validateInventory,
   userController.createInventory
+);
+
+/**
+ * @openapi
+ * '/api/users/{userId}/create-service':
+ *  post:
+ *     tags:
+ *     - User Controller
+ *     summary: Create a service
+ *     parameters:
+ *      - id: userId
+ *        in: path
+ *        description: The unique Id of the user
+ *        required: true
+ *     requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *           schema:
+ *            type: object
+ *            required:
+ *              - name
+ *              - price
+ *              - description
+ *            properties:
+ *              name:
+ *                type: string
+ *                default: oil change
+ *              description:
+ *                type: string
+ *                default: This is a description
+ *              price:
+ *                type: integer
+ *                default: 1000
+ *     responses:
+ *      201:
+ *        description: Created
+ *      409:
+ *        description: Conflict
+ *      404:
+ *        description: Not Found
+ *      500:
+ *        description: Server Error
+ */
+usersRouter.post(
+  '/:userId/create-service',
+  authMiddleware.userExtractor,
+  validateService,
+  userController.createService
 );
 
 /** DELETE Methods */
