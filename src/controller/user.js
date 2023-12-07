@@ -1,11 +1,12 @@
 const bcrypt = require('bcrypt');
+const logger = require('../config/logging');
 const User = require('../models/user');
 const Vehicle = require('../models/vehicle');
 const Appointment = require('../models/appointment');
-const logger = require('../config/logging');
 const Inventory = require('../models/inventory');
 const { checkUserRole } = require('../middlewares/authMiddleware');
 const e = require('express');
+const Service = require('../models/service');
 
 // Create a new user
 const createUser = async (req, res) => {
@@ -129,7 +130,7 @@ const createInventory = async (req, res) => {
     userId: user.id
   });
 
-  res.status(201).json(inventory);
+  res.status(201).json(inventory, user);
 };
 
 // Create a new service
@@ -138,7 +139,7 @@ const createService = async (req, res) => {
   const user = req.user;
 
   // check user role
-  checkUserRole(user);
+  checkUserRole(user, res);
 
   // check if service exists
   const existingService = await Service.findOne({
@@ -182,16 +183,32 @@ const getUserById = async (req, res) => {
 const updateUser = async (req, res) => {
   const user = req.user;
 
+  const { password, roles, permissions } = req.validatedPartialUser;
+
   // Hash the new password before updating (if provided)
-  if (req.body.password) {
-    req.body.password = await bcrypt.hash(req.body.password, 10);
+  if (password) {
+    password = await bcrypt.hash(password, 10);
+  }
+
+  console.log('roles', roles, 'permissions', permissions, user.roles);
+
+  // if user is not superadmin, they can not update roles or permissions
+  if (user.roles !== 'superAdmin') {
+    if (roles || permissions) {
+      return res.status(401).json({
+        error: 'You are not authorized to update roles or permissions'
+      });
+    }
   }
 
   // Update the user
-  const [updatedRows] = await User.update(req.body, {
-    where: { id: req.params.userId },
-    returning: true
-  });
+  const [updatedRows] = await User.update(
+    { ...req.validatedPartialUser, updatedBy: user.id },
+    {
+      where: { id: user.id },
+      returning: true
+    }
+  );
 
   if (updatedRows === 0) {
     res.status(404).json({ error: 'User not found' });
@@ -201,7 +218,7 @@ const updateUser = async (req, res) => {
   // Get the updated user record
   const updatedUser = await User.findByPk(user.id);
 
-  res.status(200).json(updatedUser);
+  res.status(200).json({ user: updatedUser, message: 'User updated' });
 };
 
 // Delete a user by ID

@@ -1,5 +1,5 @@
-const Service = require('../models/service');
 const { checkUserRole } = require('../middlewares/authMiddleware');
+const Service = require('../models/service');
 
 // Get all services
 const getServices = async (req, res) => {
@@ -44,8 +44,10 @@ const updateService = async (req, res) => {
   const { serviceId } = req.validatedServiceId;
   const user = req.user;
 
+  console.log('user', user, 'serviceId', serviceId);
+
   // check user role
-  checkUserRole(user);
+  checkUserRole(user, res);
 
   // check if service exists
   const service = await Service.findByPk(serviceId);
@@ -56,9 +58,27 @@ const updateService = async (req, res) => {
   }
 
   // Update the service
-  const updatedService = await service.update(req.validatedData);
+  const [updatedRows] = await Service.update(
+    {
+      ...req.validatedPartialService,
+      updatedBy: user.id
+    },
+    {
+      where: { id: serviceId }
+    }
+  );
 
-  res.status(200).json(updatedService);
+  if (updatedRows === 0) {
+    res.status(404).json({ error: 'Service not found' });
+    return;
+  }
+
+  // Get the updated service record
+  const updatedService = await Service.findByPk(serviceId);
+
+  res
+    .status(200)
+    .json({ service: updatedService, message: 'Service updated successfully' });
 };
 
 // Delete a service by ID
@@ -67,7 +87,7 @@ const deleteService = async (req, res) => {
   const user = req.user;
 
   // check user role
-  checkUserRole(user);
+  checkUserRole(user, res);
 
   // check if service exists
   const service = await Service.findByPk(serviceId);

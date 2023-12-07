@@ -39,6 +39,7 @@ const getAppointmentAndUser = async (req, res) => {
 // Update an appointment by ID
 const updateAppointment = async (req, res) => {
   const { appointmentId } = req.validatedAppointmentId;
+  const user = req.user;
 
   // check if appointment exists
   const appointment = await Appointment.findByPk(appointmentId);
@@ -49,7 +50,7 @@ const updateAppointment = async (req, res) => {
   }
 
   // check if user matches user that created appointment
-  if (appointment.userId !== req.userId) {
+  if (appointment.userId !== user.id) {
     res
       .status(401)
       .json({ error: 'You are not authorized to update this appointment' });
@@ -57,11 +58,25 @@ const updateAppointment = async (req, res) => {
   }
 
   // Update the appointment
-  const [updatedRows] = await Appointment.update(req.validatedData, {
-    where: { id: appointmentId }
-  });
+  const [updatedRows] = await Appointment.update(
+    { ...req.validatedPartialAppointment, updatedBy: user.id },
+    {
+      where: { id: appointmentId }
+    }
+  );
 
-  res.status(200).json(updatedRows);
+  if (updatedRows === 0) {
+    res.status(404).json({ error: 'Appointment not found' });
+    return;
+  }
+
+  // Get the updated appointment record
+  const updatedAppointment = await Appointment.findByPk(appointmentId);
+
+  res.status(200).json({
+    appointment: updatedAppointment,
+    message: 'Appointment updated successfully'
+  });
 };
 
 // Delete an appointment by ID

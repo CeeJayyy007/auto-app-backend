@@ -40,6 +40,7 @@ const getVehicleAndUser = async (req, res) => {
 // Update a vehicle by ID
 const updateVehicle = async (req, res) => {
   const { vehicleId } = req.validatedVehicleId;
+  const user = req.user;
 
   // check if vehicle exists
   const vehicle = await Vehicle.findByPk(vehicleId);
@@ -50,11 +51,25 @@ const updateVehicle = async (req, res) => {
   }
 
   // Update the vehicle
-  const [updatedRows] = await Vehicle.update(req.validatedData, {
-    where: { id: vehicleId }
-  });
+  const [updatedRows] = await Vehicle.update(
+    { ...req.validatedPartialVehicle, updatedBy: user.id },
+    {
+      where: { id: vehicleId }
+    }
+  );
 
-  res.status(200).json(updatedRows);
+  if (updatedRows === 0) {
+    res.status(400).json({ error: 'No fields updated' });
+    return;
+  }
+
+  // Get the updated vehicle
+  const updatedVehicle = await Vehicle.findByPk(vehicleId);
+
+  res.status(200).json({
+    updatedVehicle: updatedVehicle,
+    message: 'Vehicle updated successfully'
+  });
 };
 
 // Delete a vehicle by ID
