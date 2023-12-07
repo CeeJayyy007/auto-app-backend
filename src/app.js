@@ -7,6 +7,8 @@ const usersRouter = require('./routes/userRoutes');
 const healthCheckRouter = require('./routes/healthCheckRoutes');
 const vehiclesRouter = require('./routes/vehicleRoutes');
 const appointmentsRouter = require('./routes/appointmentRoutes');
+const inventoryRouter = require('./routes/inventoryRoutes');
+const servicesRouter = require('./routes/serviceRoutes');
 const cors = require('cors');
 const errorHandler = require('./middlewares/errorHandler');
 const { tokenExtractor } = require('./middlewares/authMiddleware');
@@ -14,7 +16,6 @@ const { morganMiddleware } = require('./config/logging');
 const unknownEndpoint = require('./middlewares/unknownEndpoint');
 const morgan = require('morgan');
 const swaggerDocs = require('./swagger-ui/swagger');
-const inventoryRouter = require('./routes/inventoryRoutes');
 
 // middlewares
 app.use(bodyParser.json());
@@ -31,6 +32,7 @@ app.use('/api/health-check', healthCheckRouter);
 app.use('/api/vehicles', vehiclesRouter);
 app.use('/api/appointments', appointmentsRouter);
 app.use('/api/inventory', inventoryRouter);
+app.use('/api/services', servicesRouter);
 
 // middleware for testing purposes
 if (process.env.NODE_ENV === 'test') {
