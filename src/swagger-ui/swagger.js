@@ -9,6 +9,13 @@ const options = {
       version: '1.0.0',
       description: 'API documentation for your Auto App'
     },
+    securityDefinitions: {
+      Bearer: {
+        type: 'apiKey',
+        name: 'Authorization',
+        in: 'header'
+      }
+    },
     servers: [
       {
         url: 'http://localhost:3000'

@@ -1,23 +1,24 @@
-const vehicleController = require('../controller/vehicle');
+const serviceController = require('../controller/service');
 const bodyParser = require('body-parser');
-const vehiclesRouter = require('express').Router();
-vehiclesRouter.use(bodyParser.json());
+const servicesRouter = require('express').Router();
+servicesRouter.use(bodyParser.json());
 const authMiddleware = require('../middlewares/authMiddleware');
 const {
-  validateVehicleId,
-  validateVehicle,
-  validatePartialVehicle
-} = require('../middlewares/validations/validateVehicle');
+  validateServiceId,
+  validatePartialService
+} = require('../middlewares/validations/validateService');
 
-// vehicle routes
+// service routes
 /** GET Methods */
 /**
  * @openapi
- * '/api/vehicles':
+ * '/api/services':
  *  get:
+ *     security:
+ *     - Bearer:
  *     tags:
- *     - Vehicle Controller
- *     summary: Get all vehicles
+ *     - Service Controller
+ *     summary: Get all services
  *     responses:
  *      200:
  *        description: Fetched Successfully
@@ -28,22 +29,22 @@ const {
  *      500:
  *        description: Server Error
  */
-vehiclesRouter.get(
+servicesRouter.get(
   '/',
   authMiddleware.userExtractor,
-  vehicleController.getVehicles
+  serviceController.getServices
 );
 
 /**
  * @openapi
- * '/api/vehicles/{vehicleId}':
+ * '/api/services/{serviceId}':
  *  get:
  *     tags:
- *     - Vehicle Controller
- *     summary: Get a vehicle by id
+ *     - Service Controller
+ *     summary: Get a service by id
  *     parameters:
- *      - id: vehicleId
- *        description: The unique Id of the vehicle
+ *      - id: serviceId
+ *        description: The unique Id of the service
  *     responses:
  *      200:
  *        description: Fetched Successfully
@@ -54,23 +55,23 @@ vehiclesRouter.get(
  *      500:
  *        description: Server Error
  */
-vehiclesRouter.get(
-  '/:vehicleId',
-  validateVehicleId,
-  vehicleController.getVehicleById
+servicesRouter.get(
+  '/:serviceId',
+  validateServiceId,
+  serviceController.getServiceById
 );
 
 /**
  * @openapi
- * '/api/vehicles/{vehicleId}/user':
+ * '/api/services/{serviceId}/user':
  *  get:
  *     tags:
- *     - Vehicle Controller
- *     summary: Get a vehicle and the user associated with it
+ *     - Service Controller
+ *     summary: Get a service and the user associated with it
  *     parameters:
- *      - id: vehicleId
+ *      - id: serviceId
  *        in: path
- *        description: The unique Id of the vehicle
+ *        description: The unique Id of the service
  *        required: true
  *     responses:
  *      200:
@@ -82,20 +83,20 @@ vehiclesRouter.get(
  *      500:
  *        description: Server Error
  */
-vehiclesRouter.get(
-  '/:vehicleId/user',
-  validateVehicleId,
-  vehicleController.getVehicleAndUser
+servicesRouter.get(
+  '/:serviceId/user',
+  validateServiceId,
+  serviceController.getServiceAndUser
 );
 
 /** PUT Methods */
 /**
  * @openapi
- * '/api/vehicles/{vehicleId}':
+ * '/api/services/{serviceId}':
  *  put:
  *     tags:
- *     - Vehicle Controller
- *     summary: Modify a vehicle
+ *     - Service Controller
+ *     summary: Modify a service
  *     requestBody:
  *      required: true
  *      content:
@@ -103,20 +104,17 @@ vehiclesRouter.get(
  *           schema:
  *            type: object
  *            required:
- *              - vehicleId
+ *              - serviceId
  *            properties:
- *              make:
+ *              name:
  *                type: string
- *                default: Toyota
- *              model:
+ *                default: oil change
+ *              price:
+ *                type: integer
+ *                default: 1000
+ *              description:
  *                type: string
- *                default: Corolla
- *              year:
- *                type: string
- *                default: 2016
- *              registration_number:
- *                type: string
- *                default: XA123EBD
+ *                default: This is a description
  *     responses:
  *       200:
  *          description: Modified
@@ -127,26 +125,26 @@ vehiclesRouter.get(
  *       500:
  *         description: Server Error
  */
-vehiclesRouter.put(
-  '/:vehicleId',
+servicesRouter.put(
+  '/:serviceId',
   authMiddleware.userExtractor,
-  validateVehicleId,
-  validatePartialVehicle,
-  vehicleController.updateVehicle
+  validateServiceId,
+  validatePartialService,
+  serviceController.updateService
 );
 
 /** DELETE Methods */
 /**
  * @openapi
- * '/api/vehicles/{vehicleId}':
+ * '/api/services/{serviceId}':
  *  delete:
  *     tags:
- *     - Vehicle Controller
- *     summary: Delete vehicle by Id
+ *     - Service Controller
+ *     summary: Delete service by Id
  *     parameters:
- *      - name: vehicleId
+ *      - name: serviceId
  *        in: path
- *        description: The unique Id of the vehicle
+ *        description: The unique Id of the service
  *        required: true
  *     responses:
  *      200:
@@ -158,11 +156,11 @@ vehiclesRouter.put(
  *      500:
  *        description: Server Error
  */
-vehiclesRouter.delete(
-  '/:vehicleId',
+servicesRouter.delete(
+  '/:serviceId',
   authMiddleware.userExtractor,
-  validateVehicleId,
-  vehicleController.deleteVehicle
+  validateServiceId,
+  serviceController.deleteService
 );
 
-module.exports = vehiclesRouter;
+module.exports = servicesRouter;

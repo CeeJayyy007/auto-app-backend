@@ -30,7 +30,7 @@ const getInventoryAndUser = async (req, res) => {
   const { inventoryId } = req.validatedInventoryId;
 
   // check user role
-  checkUserRole(user);
+  checkUserRole(user, res);
 
   // check if inventory exists
   const inventory = await Inventory.findByPk(inventoryId);
@@ -50,10 +50,8 @@ const updateInventory = async (req, res) => {
   const { inventoryId } = req.validatedInventoryId;
   const user = req.user;
 
-  console.log('here', user);
-
   // check user role
-  checkUserRole(user);
+  checkUserRole(user, res);
 
   // check if inventory exists
   const inventory = await Inventory.findByPk(inventoryId);
@@ -65,7 +63,7 @@ const updateInventory = async (req, res) => {
 
   // Update the inventory
   const [updatedRows] = await Inventory.update(
-    { ...req.validatedData, updatedBy: user.id },
+    { ...req.validatedPartialInventory, updatedBy: user.id },
     {
       where: { id: inventoryId },
       individualHooks: true
@@ -77,7 +75,7 @@ const updateInventory = async (req, res) => {
     return;
   }
 
-  // Get the updated user record
+  // Get the updated inventory record
   const updatedInventory = await Inventory.findByPk(inventoryId);
 
   res.status(200).json({
@@ -91,7 +89,7 @@ const deleteInventory = async (req, res) => {
   const { inventoryId } = req.validatedInventoryId;
 
   // check user role
-  checkUserRole(user);
+  checkUserRole(user, res);
 
   // check if inventory exists
   const inventory = await Inventory.findByPk(inventoryId);

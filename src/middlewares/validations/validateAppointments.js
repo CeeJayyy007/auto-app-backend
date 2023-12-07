@@ -2,13 +2,23 @@ const joi = require('joi');
 
 const validateAppointmentsSchema = joi.object({
   date: joi.date().required(),
-  time: joi.string().required(),
   note: joi.string().required(),
+  vehicleId: joi.number().required(),
   serviceRequest: joi.array().required()
 });
 
 const validateAppointmentsIdSchema = joi.object({
   appointmentId: joi.number().required()
+});
+
+const validatePartialAppointmentSchema = joi.object({
+  date: joi.date(),
+  note: joi.string(),
+  vehicleId: joi.number(),
+  serviceRequest: joi.array(),
+  status: joi.string(),
+  updatedBy: joi.number(),
+  deletedAt: joi.date()
 });
 
 const validateAppointments = (req, res, next) => {
@@ -33,4 +43,19 @@ const validateAppointmentsId = (req, res, next) => {
   next();
 };
 
-module.exports = { validateAppointments, validateAppointmentsId };
+const validatePartialAppointment = (req, res, next) => {
+  const { error, value } = validatePartialAppointmentSchema.validate(req.body);
+
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
+  }
+
+  req.validatedPartialAppointment = value;
+  next();
+};
+
+module.exports = {
+  validateAppointments,
+  validateAppointmentsId,
+  validatePartialAppointment
+};
