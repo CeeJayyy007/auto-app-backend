@@ -5,6 +5,7 @@ const Appointment = require('../models/appointment');
 const logger = require('../config/logging');
 const Inventory = require('../models/inventory');
 const { checkUserRole } = require('../middlewares/authMiddleware');
+const e = require('express');
 
 // Create a new user
 const createUser = async (req, res) => {
@@ -50,24 +51,31 @@ const addUserVehicle = async (req, res) => {
     userId: userId
   });
 
-  res.status(201).json(vehicle);
+  res.status(201).json({ vehicle, user: existingUser });
 };
 
 // Create a new appointment
 const createAppointment = async (req, res) => {
-  const { date, time, serviceRequest, note } = req.validatedData;
+  const { date, serviceRequest, note, vehicleId } = req.validatedData;
   const { userId } = req.validatedUserId;
+  const user = req.user;
 
-  // check if user exists
-  const existingUser = await User.findByPk(userId);
-
-  if (!existingUser) {
+  if (!user) {
     return res.status(404).json({ error: 'User not found' });
+  }
+
+  // check that vehicle belongs to user
+  const vehicle = await user.getVehicles({
+    where: { id: vehicleId }
+  });
+
+  if (!vehicle) {
+    return res.status(404).json({ error: 'Vehicle not found' });
   }
 
   // check if appointment exists
   const existingAppointment = await Appointment.findOne({
-    where: { date: date, time: time }
+    where: { date: date, vehicleId: vehicleId }
   });
 
   if (existingAppointment) {
@@ -88,13 +96,13 @@ const createAppointment = async (req, res) => {
   // Create a new appointment
   const appointment = await Appointment.create({
     date: date,
-    time: time,
     serviceRequest: serviceRequest,
     note: note,
-    userId: userId
+    userId: userId,
+    vehicleId: vehicleId
   });
 
-  res.status(201).json(appointment);
+  res.status(201).json({ appointment, vehicle, user });
 };
 
 // Create a new inventory

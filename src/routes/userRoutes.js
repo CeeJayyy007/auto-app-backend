@@ -210,6 +210,7 @@ usersRouter.post(
  */
 usersRouter.post(
   '/:userId/create-appointment',
+  authMiddleware.userExtractor,
   validateUserId,
   validateAppointments,
   userController.createAppointment
