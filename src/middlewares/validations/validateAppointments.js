@@ -11,6 +11,7 @@ const validateAppointmentsIdSchema = joi.object({
 });
 
 const validatePartialAppointmentSchema = joi.object({
+  appointmentId: joi.number(),
   date: joi.date(),
   note: joi.string(),
   vehicleId: joi.number(),

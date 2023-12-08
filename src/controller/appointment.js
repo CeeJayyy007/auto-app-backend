@@ -1,4 +1,6 @@
 const Appointment = require('../models/appointment');
+const MaintenanceRecord = require('../models/maintenanceRecord');
+const Service = require('../models/service');
 
 // Get all appointments
 const getAppointments = async (req, res) => {
@@ -11,7 +13,13 @@ const getAppointmentById = async (req, res) => {
   const { appointmentId } = req.validatedAppointmentId;
 
   // check if appointment exists
-  const appointment = await Appointment.findByPk(appointmentId);
+  const appointment = await Appointment.findByPk(appointmentId, {
+    include: [
+      {
+        model: Service
+      }
+    ]
+  });
 
   if (!appointment) {
     res.status(404).json({ error: 'Appointment not found' });
@@ -79,6 +87,69 @@ const updateAppointment = async (req, res) => {
   });
 };
 
+// create service request
+const createServiceRequest = async (req, res) => {
+  const { appointmentId } = req.validatedPartialAppointment;
+  const user = req.user;
+
+  console.log('request body', req.body);
+
+  // check if appointment exists
+  const appointment = await Appointment.findByPk(appointmentId, {
+    include: [
+      {
+        model: Service
+      }
+    ]
+  });
+
+  console.log('appointmentId', appointment, req.validatedPartialAppointment);
+
+  // create service request if appointment does not exist
+  if (!appointment) {
+    // create appointment
+    const newAppointment = await Appointment.create({
+      ...req.validatedPartialAppointment,
+      status: 'approved',
+      date: new Date(),
+      updatedBy: user.id
+    });
+
+    // create maintenance record
+    const newMaintenanceRecord = await MaintenanceRecord.create({
+      ...newAppointment,
+      appointmentId: newAppointment.id,
+      userId: user.id
+    });
+
+    res.status(201).json({
+      maintenanceRecord: newMaintenanceRecord,
+      appointment: newAppointment,
+      message: 'Service request created successfully'
+    });
+  }
+
+  // create service request with existing appointment
+  const newAppointment = await appointment.update({
+    ...appointment,
+    status: 'approved',
+    updatedBy: user.id
+  });
+
+  // create maintenance record
+  const newMaintenanceRecord = await MaintenanceRecord.create({
+    startDate: newAppointment.date,
+    description: newAppointment.note,
+    vehicleId: newAppointment.vehicleId
+  });
+
+  res.status(201).json({
+    maintenanceRecord: newMaintenanceRecord,
+    appointment: newAppointment,
+    message: 'Service request created successfully'
+  });
+};
+
 // Delete an appointment by ID
 const deleteAppointment = async (req, res) => {
   const { appointmentId } = req.validatedAppointmentId;
@@ -104,5 +175,6 @@ module.exports = {
   getAppointmentById,
   updateAppointment,
   deleteAppointment,
-  getAppointmentAndUser
+  getAppointmentAndUser,
+  createServiceRequest
 };

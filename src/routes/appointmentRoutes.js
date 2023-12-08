@@ -5,7 +5,6 @@ appointmentsRouter.use(bodyParser.json());
 const authMiddleware = require('../middlewares/authMiddleware');
 const {
   validateAppointmentsId,
-  validateAppointments,
   validatePartialAppointment
 } = require('../middlewares/validations/validateAppointments');
 
@@ -107,12 +106,12 @@ appointmentsRouter.get(
  *              date:
  *                type: string
  *                default: ''
- *              time:
+ *              status:
  *                type: string
- *                default: ''
+ *                default: approved
  *              note:
  *                type: string
- *                default: ''
+ *                default: This is a note
  *     responses:
  *      200:
  *        description: Modified
@@ -129,6 +128,46 @@ appointmentsRouter.put(
   validateAppointmentsId,
   validatePartialAppointment,
   appointmentController.updateAppointment
+);
+
+/** POST Methods */
+/**
+ * @openapi
+ * '/api/appointments/{appointmentId}':
+ *  post:
+ *     tags:
+ *     - Appointment Controller
+ *     summary: Create a Service Request
+ *     requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *           schema:
+ *            type: object
+ *            required:
+ *              - appointmentId
+ *            properties:
+ *              note:
+ *                type: string
+ *                default: This is a note
+ *              serviceId:
+ *                type: [integer]
+ *                default: [1,2]
+ *     responses:
+ *      200:
+ *        description: Modified
+ *      400:
+ *        description: Bad Request
+ *      404:
+ *        description: Not Found
+ *      500:
+ *        description: Server Error
+ */
+appointmentsRouter.post(
+  '/create-service-request',
+  authMiddleware.userExtractor,
+  validatePartialAppointment,
+  appointmentController.createServiceRequest
 );
 
 /** DELETE Methods */

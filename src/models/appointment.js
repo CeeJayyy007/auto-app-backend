@@ -11,13 +11,9 @@ const Appointment = sequelize.define(
       type: DataTypes.DATE,
       allowNull: false
     },
-    serviceRequest: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
-      allowNull: false
-    },
     note: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     },
     status: {
       type: DataTypes.STRING,
