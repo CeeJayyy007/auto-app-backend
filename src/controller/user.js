@@ -1,12 +1,10 @@
 const bcrypt = require('bcrypt');
-const logger = require('../config/logging');
 const User = require('../models/user');
 const Vehicle = require('../models/vehicle');
 const Appointment = require('../models/appointment');
 const Inventory = require('../models/inventory');
-const { checkUserRole } = require('../middlewares/authMiddleware');
-const e = require('express');
 const Service = require('../models/service');
+const { checkUserRole } = require('../middlewares/authMiddleware');
 
 // Create a new user
 const createUser = async (req, res) => {
@@ -66,6 +64,8 @@ const createAppointment = async (req, res) => {
     return res.status(404).json({ error: 'User not found' });
   }
 
+  checkUserRole(['user'], user, res);
+
   // check that vehicle belongs to user
   const vehicle = await user.getVehicles({
     where: { id: vehicleId }
@@ -113,7 +113,7 @@ const createInventory = async (req, res) => {
   const user = req.user;
 
   // check user role
-  checkUserRole(user, res);
+  checkUserRole(['admin', 'superAdmin'], user, res);
 
   // check if inventory exists
   const existingInventory = await Inventory.findOne({
@@ -139,7 +139,7 @@ const createService = async (req, res) => {
   const user = req.user;
 
   // check user role
-  checkUserRole(user, res);
+  checkUserRole(['admin', 'superAdmin'], user, res);
 
   // check if service exists
   const existingService = await Service.findOne({
@@ -190,10 +190,10 @@ const updateUser = async (req, res) => {
     password = await bcrypt.hash(password, 10);
   }
 
-  console.log('roles', roles, 'permissions', permissions, user.roles);
+  const isSuperAdmin = checkUserRole(['superAdmin'], user, res);
 
   // if user is not superadmin, they can not update roles or permissions
-  if (user.roles !== 'superAdmin') {
+  if (!isSuperAdmin) {
     if (roles || permissions) {
       return res.status(401).json({
         error: 'You are not authorized to update roles or permissions'
