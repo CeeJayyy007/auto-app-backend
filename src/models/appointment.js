@@ -50,8 +50,11 @@ Appointment.belongsTo(User, { foreignKey: 'userId' });
 Vehicle.hasMany(Appointment, { foreignKey: 'vehicleId' });
 Appointment.belongsTo(Vehicle, { foreignKey: 'vehicleId' });
 
-// Define the one-to-many relationship for Appointment and Service
-Appointment.hasMany(Service, { foreignKey: 'appointmentId' });
-Service.belongsTo(Appointment, { foreignKey: 'appointmentId' });
+// Define the many-to-many relationship for Appointment and Service
+Appointment.belongsToMany(Service, {
+  through: 'AppointmentService',
+  foreignKey: 'appointmentId',
+  otherKey: 'serviceId'
+});
 
 module.exports = Appointment;
