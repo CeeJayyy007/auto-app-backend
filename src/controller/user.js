@@ -5,6 +5,7 @@ const Appointment = require('../models/appointment');
 const Inventory = require('../models/inventory');
 const Service = require('../models/service');
 const { checkUserRole } = require('../middlewares/authMiddleware');
+const attachServices = require('./helpers/attachServices');
 
 // Create a new user
 const createUser = async (req, res) => {
@@ -57,7 +58,7 @@ const addUserVehicle = async (req, res) => {
 
 // Create a new appointment
 const createAppointment = async (req, res) => {
-  const { date, vehicleId } = req.validatedData;
+  const { date, vehicleId, serviceId } = req.validatedData;
   const user = req.user;
 
   if (!user) {
@@ -89,8 +90,6 @@ const createAppointment = async (req, res) => {
     where: { date: date, vehicleId: vehicleId, userId: user.id }
   });
 
-  console.log('existing', appointments);
-
   if (appointments.length >= 3) {
     return res
       .status(409)
@@ -103,6 +102,9 @@ const createAppointment = async (req, res) => {
     userId: user.id,
     vehicleId: vehicleId
   });
+
+  // attach services to appointment
+  attachServices(appointment, serviceId);
 
   res.status(201).json({ appointment, vehicle, user });
 };
