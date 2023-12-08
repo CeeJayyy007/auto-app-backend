@@ -8,37 +8,14 @@ const Appointment = require('./appointment');
 const MaintenanceRecord = sequelize.define(
   'MaintenanceRecord',
   {
-    vehicleId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'Vehicles',
-        key: 'id'
-      }
-    },
-    appointmentId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'Appointments',
-        key: 'id'
-      }
-    },
-    userId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'Users',
-        key: 'id'
-      }
-    },
     startDate: {
       type: DataTypes.DATE,
       allowNull: false
     },
     endDate: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
+      defaultValue: null
     },
     description: {
       type: DataTypes.TEXT,
