@@ -4,13 +4,15 @@ const User = require('./user');
 const Service = require('./service');
 const Inventory = require('./inventory');
 const Appointment = require('./appointment');
+const Vehicle = require('./vehicle');
 
 const MaintenanceRecord = sequelize.define(
   'MaintenanceRecord',
   {
     startDate: {
       type: DataTypes.DATE,
-      allowNull: false
+      allowNull: false,
+      defaultValue: new Date()
     },
     endDate: {
       type: DataTypes.DATE,
@@ -56,7 +58,13 @@ const MaintenanceRecord = sequelize.define(
             resolve();
           }
 
-          maintenanceRecord.duration = startDate - endDate;
+          // Calculate duration in days
+          const millisecondsInADay = 24 * 60 * 60 * 1000; // 1 day = 24 hours * 60 minutes * 60 seconds * 1000 milliseconds
+          const durationInDays = Math.ceil(
+            (endDate - startDate) / millisecondsInADay
+          );
+
+          maintenanceRecord.duration = durationInDays;
           resolve();
         });
       }
@@ -83,13 +91,13 @@ MaintenanceRecord.belongsToMany(Inventory, {
 });
 
 // Define a one-to-one relationship between MaintenanceRecords and Appointment
-MaintenanceRecord.hasOne(Appointment, { foreignKey: 'appointmentId' });
+MaintenanceRecord.hasOne(Appointment, { foreignKey: 'maintenanceRecordId' });
 Appointment.belongsTo(MaintenanceRecord, {
-  foreignKey: 'appointmentId'
+  foreignKey: 'maintenanceRecordId'
 });
 
 // Define the one-to-many relationship between MaintenanceRecords and Vehicle
 MaintenanceRecord.belongsTo(Vehicle, { foreignKey: 'vehicleId' });
 Vehicle.hasMany(MaintenanceRecord, { foreignKey: 'vehicleId' });
 
-module.export = MaintenanceRecord;
+module.exports = MaintenanceRecord;
