@@ -3,8 +3,7 @@ const joi = require('joi');
 const validateAppointmentsSchema = joi.object({
   date: joi.date().required(),
   note: joi.string().required(),
-  vehicleId: joi.number().required(),
-  serviceRequest: joi.array().required()
+  vehicleId: joi.number().required()
 });
 
 const validateAppointmentsIdSchema = joi.object({
@@ -15,7 +14,6 @@ const validatePartialAppointmentSchema = joi.object({
   date: joi.date(),
   note: joi.string(),
   vehicleId: joi.number(),
-  serviceRequest: joi.array(),
   status: joi.string(),
   updatedBy: joi.number(),
   deletedAt: joi.date()
