@@ -2,6 +2,7 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const User = require('./user');
 const Vehicle = require('./vehicle');
+const Service = require('./service');
 
 const Appointment = sequelize.define(
   'Appointment',
@@ -48,5 +49,9 @@ Appointment.belongsTo(User, { foreignKey: 'userId' });
 // Define the one-to-many relationship for Vehicle and Appointment
 Vehicle.hasMany(Appointment, { foreignKey: 'vehicleId' });
 Appointment.belongsTo(Vehicle, { foreignKey: 'vehicleId' });
+
+// Define the one-to-many relationship for Appointment and Service
+Appointment.hasMany(Service, { foreignKey: 'appointmentId' });
+Service.belongsTo(Appointment, { foreignKey: 'appointmentId' });
 
 module.exports = Appointment;
