@@ -1,6 +1,8 @@
+const { checkUserRole } = require('../middlewares/authMiddleware');
 const Appointment = require('../models/appointment');
 const MaintenanceRecord = require('../models/maintenanceRecord');
 const Service = require('../models/service');
+const attachServices = require('./helpers/attachServices');
 
 // Get all appointments
 const getAppointments = async (req, res) => {
@@ -47,6 +49,7 @@ const getAppointmentAndUser = async (req, res) => {
 // Update an appointment by ID
 const updateAppointment = async (req, res) => {
   const { appointmentId } = req.validatedAppointmentId;
+  const { serviceId } = req.validatedPartialAppointment;
   const user = req.user;
 
   // check if appointment exists
@@ -81,6 +84,9 @@ const updateAppointment = async (req, res) => {
   // Get the updated appointment record
   const updatedAppointment = await Appointment.findByPk(appointmentId);
 
+  // update appointment services
+  attachServices(updatedAppointment, serviceId);
+
   res.status(200).json({
     appointment: updatedAppointment,
     message: 'Appointment updated successfully'
@@ -89,9 +95,14 @@ const updateAppointment = async (req, res) => {
 
 // create service request
 const createServiceRequest = async (req, res) => {
-  const { appointmentId } = req.validatedPartialAppointment;
+  const { appointmentId, serviceId } = req.validatedPartialAppointment;
   const user = req.user;
   const appointmentStatus = 'approved';
+
+  console.log('user', user);
+
+  // check if user has authorization to create service request
+  checkUserRole(['admin', 'superAdmin'], user, res);
 
   // check if appointment exists
   const appointment = await Appointment.findByPk(appointmentId, {
@@ -109,8 +120,11 @@ const createServiceRequest = async (req, res) => {
       ...req.validatedPartialAppointment,
       status: appointmentStatus,
       date: new Date(),
-      updatedBy: user.id
+      userId: user.id
     });
+
+    // add services to appointment
+    attachServices(newAppointment, serviceId);
 
     // create maintenance record
     const newMaintenanceRecord = await MaintenanceRecord.create({
@@ -132,6 +146,9 @@ const createServiceRequest = async (req, res) => {
     status: appointmentStatus,
     updatedBy: user.id
   });
+
+  // add services to appointment
+  attachServices(newAppointment, serviceId);
 
   // create maintenance record
   const newMaintenanceRecord = await MaintenanceRecord.create({
