@@ -91,8 +91,7 @@ const updateAppointment = async (req, res) => {
 const createServiceRequest = async (req, res) => {
   const { appointmentId } = req.validatedPartialAppointment;
   const user = req.user;
-
-  console.log('request body', req.body);
+  const appointmentStatus = 'approved';
 
   // check if appointment exists
   const appointment = await Appointment.findByPk(appointmentId, {
@@ -103,14 +102,12 @@ const createServiceRequest = async (req, res) => {
     ]
   });
 
-  console.log('appointmentId', appointment, req.validatedPartialAppointment);
-
   // create service request if appointment does not exist
   if (!appointment) {
     // create appointment
     const newAppointment = await Appointment.create({
       ...req.validatedPartialAppointment,
-      status: 'approved',
+      status: appointmentStatus,
       date: new Date(),
       updatedBy: user.id
     });
@@ -132,7 +129,7 @@ const createServiceRequest = async (req, res) => {
   // create service request with existing appointment
   const newAppointment = await appointment.update({
     ...appointment,
-    status: 'approved',
+    status: appointmentStatus,
     updatedBy: user.id
   });
 
