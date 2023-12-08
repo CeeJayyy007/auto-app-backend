@@ -4,6 +4,7 @@ const Vehicle = require('../models/vehicle');
 const Inventory = require('../models/inventory');
 const User = require('../models/user');
 const Service = require('../models/service');
+const { checkUserRole } = require('../middlewares/authMiddleware');
 
 // Get all maintenance records
 const getMaintenanceRecords = async (req, res) => {
@@ -14,9 +15,10 @@ const getMaintenanceRecords = async (req, res) => {
 // Get a specific maintenance record by ID
 const getMaintenanceRecordById = async (req, res) => {
   const { maintenanceRecordId } = req.validatedMaintenanceRecordId;
+  const user = req.user;
 
   // check user role
-  checkUserRole(user);
+  checkUserRole(['admin', 'superAdmin'], user, res);
 
   // check if maintenance record exists
   const maintenanceRecord =
@@ -35,7 +37,7 @@ const getMaintenanceRecordAndUser = async (req, res) => {
   const { maintenanceRecordId } = req.validatedMaintenanceRecordId;
 
   // check user role
-  checkUserRole(user, res);
+  checkUserRole(['admin', 'superAdmin'], user, res);
 
   // check if maintenance record exists
   const maintenanceRecord =
@@ -54,6 +56,7 @@ const getMaintenanceRecordAndUser = async (req, res) => {
 // Update a maintenance record by ID
 const updateMaintenanceRecord = async (req, res) => {
   const { maintenanceRecordId } = req.validatedMaintenanceRecordId;
+  const { status } = req.validatedPartialMaintenanceRecord;
   const user = req.user;
 
   // check user role
@@ -68,10 +71,28 @@ const updateMaintenanceRecord = async (req, res) => {
     return;
   }
 
-  // Update the maintenance record
-  await maintenanceRecord.update(req.validatedData);
+  const [updatedRows] = await MaintenanceRecord.update(
+    {
+      ...req.validatedPartialMaintenanceRecord
+    },
+    {
+      where: { id: maintenanceRecordId }
+    }
+  );
 
-  res.status(200).json(maintenanceRecord);
+  if (updatedRows === 0) {
+    res.status(404).json({ error: 'Maintenance record not found' });
+    return;
+  }
+
+  // Get the updated maintenance record record
+  const updatedMaintenanceRecord =
+    await MaintenanceRecord.findByPk(maintenanceRecordId);
+
+  res.status(200).json({
+    maintenanceRecord: updatedMaintenanceRecord,
+    message: 'Maintenance record updated'
+  });
 };
 
 // Delete a maintenance record by ID
@@ -80,7 +101,7 @@ const deleteMaintenanceRecord = async (req, res) => {
   const user = req.user;
 
   // check user role
-  checkUserRole(user, res);
+  checkUserRole(['admin', 'superAdmin'], user, res);
 
   // check if maintenance record exists
   const maintenanceRecord =
