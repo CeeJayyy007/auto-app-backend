@@ -10,7 +10,9 @@ const validatePartialMaintenanceRecordSchema = joi.object({
   status: joi.string(),
   description: joi.string(),
   updatedBy: joi.number(),
-  deletedAt: joi.date()
+  deletedAt: joi.date(),
+  serviceId: joi.array().items(joi.number()),
+  inventoryId: joi.array().items(joi.number())
 });
 
 const validateMaintenanceRecordsId = (req, res, next) => {
