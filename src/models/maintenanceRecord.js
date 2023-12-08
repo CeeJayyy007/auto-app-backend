@@ -90,12 +90,6 @@ MaintenanceRecord.belongsToMany(Inventory, {
   otherKey: 'inventoryId'
 });
 
-// Define a one-to-one relationship between MaintenanceRecords and Appointment
-MaintenanceRecord.hasOne(Appointment, { foreignKey: 'maintenanceRecordId' });
-Appointment.belongsTo(MaintenanceRecord, {
-  foreignKey: 'maintenanceRecordId'
-});
-
 // Define the one-to-many relationship between MaintenanceRecords and Vehicle
 MaintenanceRecord.belongsTo(Vehicle, { foreignKey: 'vehicleId' });
 Vehicle.hasMany(MaintenanceRecord, { foreignKey: 'vehicleId' });
