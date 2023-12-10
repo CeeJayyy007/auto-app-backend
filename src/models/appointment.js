@@ -21,6 +21,10 @@ const Appointment = sequelize.define(
       defaultValue: 'pending',
       values: ['pending', 'approved', 'rejected', 'completed']
     },
+    serviceId: {
+      type: DataTypes.ARRAY(DataTypes.INTEGER),
+      allowNull: true
+    },
     updatedBy: {
       type: DataTypes.INTEGER,
       allowNull: true

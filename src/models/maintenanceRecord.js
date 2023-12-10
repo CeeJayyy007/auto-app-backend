@@ -23,6 +23,22 @@ const MaintenanceRecord = sequelize.define(
       type: DataTypes.TEXT,
       allowNull: true
     },
+    appointmentId: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    vehicleId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    serviceId: {
+      type: DataTypes.ARRAY(DataTypes.INTEGER),
+      allowNull: true
+    },
+    inventoryId: {
+      type: DataTypes.ARRAY(DataTypes.INTEGER),
+      allowNull: true
+    },
     duration: {
       type: DataTypes.INTEGER,
       allowNull: false,
