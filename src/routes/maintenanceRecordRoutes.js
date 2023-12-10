@@ -7,12 +7,16 @@ const {
   validateMaintenanceRecordsId,
   validatePartialMaintenanceRecord
 } = require('../middlewares/validations/validateMaintenanceRecord');
+const {
+  validateAttachment,
+  validateAttachmentId
+} = require('../middlewares/validations/validateAttachment');
 
 // maintenanceRecord routes
 /** GET Methods */
 /**
  * @openapi
- * '/api/maintenanceRecords':
+ * '/api/maintenance-records':
  *  get:
  *    tags:
  *    - MaintenanceRecord Controller
@@ -34,7 +38,7 @@ maintenanceRecordsRouter.get(
 
 /**
  * @openapi
- * '/api/maintenanceRecords/{maintenanceRecordId}':
+ * '/api/maintenance-records/{maintenanceRecordId}':
  *  get:
  *    tags:
  *    - MaintenanceRecord Controller
@@ -63,7 +67,7 @@ maintenanceRecordsRouter.get(
 
 /**
  * @openapi
- * '/api/maintenanceRecord/{maintenanceRecordId}/user':
+ * '/api/maintenance-records/{maintenanceRecordId}/user':
  *  get:
  *     tags:
  *     - MaintenanceRecord Controller
@@ -92,7 +96,7 @@ maintenanceRecordsRouter.get(
 /** PUT Methods */
 /**
  * @openapi
- * '/api/maintenanceRecords/{maintenanceRecordId}':
+ * '/api/maintenance-records/{maintenanceRecordId}':
  *  put:
  *     tags:
  *     - MaintenanceRecord Controller
@@ -127,10 +131,59 @@ maintenanceRecordsRouter.put(
   maintenanceRecordController.updateMaintenanceRecord
 );
 
+/**
+ * @openapi
+ * '/api/maintenance-records/{maintenanceRecordId}/add-attachment':
+ *  post:
+ *     tags:
+ *     - MaintenanceRecord Controller
+ *     summary: Create and add an attachment to a maintenanceRecord
+ *     parameters:
+ *      - id: maintenanceRecordId
+ *        in: path
+ *        description: The unique maintenanceRecordId
+ *        required: true
+ *     requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *           schema:
+ *            type: object
+ *            required:
+ *              - name
+ *              - filePath
+ *            properties:
+ *              name:
+ *                type: string
+ *                default: scan of receipt
+ *              filePath:
+ *                type: string
+ *                default: https://www.google.com
+ *              description:
+ *                type: string
+ *                default: This is a description
+ *     responses:
+ *       201:
+ *         description: Created
+ *       409:
+ *         description: Conflict
+ *       404:
+ *         description: Not Found
+ *       500:
+ *         description: Server Error
+ */
+maintenanceRecordsRouter.post(
+  '/:maintenanceRecordId/add-attachment',
+  authMiddleware.userExtractor,
+  validateAttachment,
+  validateMaintenanceRecordsId,
+  maintenanceRecordController.createAttachment
+);
+
 /** DELETE Methods */
 /**
  * @openapi
- * '/api/maintenanceRecords/{maintenanceRecordId}':
+ * '/api/maintenance-records/{maintenanceRecordId}':
  *  delete:
  *     tags:
  *     - MaintenanceRecord Controller

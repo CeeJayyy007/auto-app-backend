@@ -1,9 +1,6 @@
 const MaintenanceRecord = require('../models/maintenanceRecord');
 const Appointment = require('../models/appointment');
-const Vehicle = require('../models/vehicle');
-const Inventory = require('../models/inventory');
-const User = require('../models/user');
-const Service = require('../models/service');
+const Attachment = require('../models/attachment');
 const { checkUserRole } = require('../middlewares/authMiddleware');
 const attachServices = require('./helpers/attachServices');
 const attachInventory = require('./helpers/attachInventory');
@@ -139,6 +136,32 @@ const updateMaintenanceRecord = async (req, res) => {
   });
 };
 
+// create and add attachment to maintenance record
+const createAttachment = async (req, res) => {
+  const { maintenanceRecordId } = req.validatedMaintenanceRecordId;
+  const user = req.user;
+
+  // check if maintenance record exists
+  const maintenanceRecord =
+    await MaintenanceRecord.findByPk(maintenanceRecordId);
+
+  if (!maintenanceRecord) {
+    res.status(404).json({ error: 'Maintenance record not found' });
+    return;
+  }
+
+  // create attachment
+  const attachment = await Attachment.create({
+    ...req.validatedData,
+    userId: user.id,
+    maintenanceRecordId: maintenanceRecord.id
+  });
+
+  res
+    .status(201)
+    .json({ attachment, message: 'Attachment added successfully' });
+};
+
 // Delete a maintenance record by ID
 const deleteMaintenanceRecord = async (req, res) => {
   const { maintenanceRecordId } = req.validatedMaintenanceRecordId;
@@ -167,5 +190,6 @@ module.exports = {
   getMaintenanceRecordById,
   getMaintenanceRecordAndUser,
   updateMaintenanceRecord,
-  deleteMaintenanceRecord
+  deleteMaintenanceRecord,
+  createAttachment
 };
