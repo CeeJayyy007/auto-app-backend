@@ -9,6 +9,7 @@ const vehiclesRouter = require('./routes/vehicleRoutes');
 const appointmentsRouter = require('./routes/appointmentRoutes');
 const inventoryRouter = require('./routes/inventoryRoutes');
 const servicesRouter = require('./routes/serviceRoutes');
+const attachmentsRouter = require('./routes/attachmentRoutes');
 const cors = require('cors');
 const errorHandler = require('./middlewares/errorHandler');
 const { tokenExtractor } = require('./middlewares/authMiddleware');
@@ -35,6 +36,7 @@ app.use('/api/appointments', appointmentsRouter);
 app.use('/api/inventory', inventoryRouter);
 app.use('/api/services', servicesRouter);
 app.use('/api/maintenance-records', maintenanceRecordsRouter);
+app.use('/api/attachments', attachmentsRouter);
 
 // middleware for testing purposes
 if (process.env.NODE_ENV === 'test') {
