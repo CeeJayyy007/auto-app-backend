@@ -6,6 +6,7 @@ const User = require('../models/user');
 const Service = require('../models/service');
 const { checkUserRole } = require('../middlewares/authMiddleware');
 const attachServices = require('./helpers/attachServices');
+const attachInventory = require('./helpers/attachInventory');
 
 // Get all maintenance records
 const getMaintenanceRecords = async (req, res) => {
@@ -86,11 +87,21 @@ const updateMaintenanceRecord = async (req, res) => {
     return;
   }
 
+  // if serviceId is provided, attach services to appointment
+  if (serviceId) {
+    attachServices(maintenanceRecord, serviceId, res);
+  }
+
+  // if inventoryId is provided, attach inventory to appointment
+  if (inventoryId) {
+    attachInventory(maintenanceRecord, inventoryId, res);
+  }
+
   // if status is completed, update the appointment status to completed
   if (appointmentStatus === 'completed') {
     // Update the appointment
     const [updatedRows] = await Appointment.update(
-      { status: appointmentStatus, updatedBy: user.id },
+      { status: appointmentStatus, updatedBy: user.id, serviceId: serviceId },
       {
         where: { id: appointment.id }
       }
@@ -121,16 +132,6 @@ const updateMaintenanceRecord = async (req, res) => {
   // Get the updated maintenance record record
   const updatedMaintenanceRecord =
     await MaintenanceRecord.findByPk(maintenanceRecordId);
-
-  // if serviceId is provided, attach services to appointment
-  if (serviceId) {
-    attachServices(updatedMaintenanceRecord, serviceId);
-  }
-
-  // if inventoryId is provided, attach inventory to appointment
-  if (inventoryId) {
-    attachInventory(updatedMaintenanceRecord, inventoryId);
-  }
 
   res.status(200).json({
     maintenanceRecord: updatedMaintenanceRecord,
