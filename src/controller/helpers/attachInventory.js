@@ -1,6 +1,6 @@
 const Inventory = require('../../models/inventory');
 
-const attachInventory = async (hostModel, inventoryId) => {
+const attachInventory = async (hostModel, inventoryId, res) => {
   // check if services in serviceId array exist
   const inventories = await Inventory.findAll({
     where: { id: inventoryId }

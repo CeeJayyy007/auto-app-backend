@@ -1,6 +1,6 @@
 const Service = require('../../models/service');
 
-const attachServices = async (hostModel, serviceId) => {
+const attachServices = async (hostModel, serviceId, res) => {
   // check if services in serviceId array exist
   const services = await Service.findAll({
     where: { id: serviceId }
