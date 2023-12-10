@@ -76,9 +76,23 @@ const createAppointment = async (req, res) => {
     return res.status(404).json({ error: 'Vehicle not found' });
   }
 
+  // check if all service exists
+  const service = await Service.findByAll({
+    where: { id: serviceId }
+  });
+
+  if (!service[0]) {
+    return res.status(404).json({ error: 'Service not found' });
+  }
+
   // check if appointment exists
   const existingAppointment = await Appointment.findOne({
-    where: { date: date, vehicleId: vehicleId, userId: user.id }
+    where: {
+      date: date,
+      vehicleId: vehicleId,
+      serviceId: serviceId,
+      userId: user.id
+    }
   });
 
   if (existingAppointment) {
