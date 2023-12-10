@@ -68,6 +68,9 @@ const updateAppointment = async (req, res) => {
     return;
   }
 
+  // update appointment services
+  attachServices(appointment, serviceId, res);
+
   // Update the appointment
   const [updatedRows] = await Appointment.update(
     { ...req.validatedPartialAppointment, updatedBy: user.id },
@@ -84,9 +87,6 @@ const updateAppointment = async (req, res) => {
   // Get the updated appointment record
   const updatedAppointment = await Appointment.findByPk(appointmentId);
 
-  // update appointment services
-  attachServices(updatedAppointment, serviceId);
-
   res.status(200).json({
     appointment: updatedAppointment,
     message: 'Appointment updated successfully'
@@ -95,14 +95,22 @@ const updateAppointment = async (req, res) => {
 
 // create service request
 const createServiceRequest = async (req, res) => {
-  const { appointmentId, serviceId } = req.validatedPartialAppointment;
+  const { appointmentId, serviceId, vehicleId } =
+    req.validatedPartialAppointment;
   const user = req.user;
   const appointmentStatus = 'approved';
 
-  console.log('user', user);
-
   // check if user has authorization to create service request
   checkUserRole(['admin', 'superAdmin'], user, res);
+
+  // check that vehicle belongs to user
+  const vehicle = await user.getVehicles({
+    where: { id: vehicleId }
+  });
+
+  if (!vehicle[0]) {
+    return res.status(404).json({ error: 'Vehicle not found' });
+  }
 
   // check if appointment exists
   const appointment = await Appointment.findByPk(appointmentId, {
@@ -113,23 +121,27 @@ const createServiceRequest = async (req, res) => {
     ]
   });
 
+  // add services to appointment
+  attachServices(newAppointment, serviceId, res);
+
   // create service request if appointment does not exist
   if (!appointment) {
     // create appointment
     const newAppointment = await Appointment.create({
       ...req.validatedPartialAppointment,
       status: appointmentStatus,
+      serviceId: serviceId,
       date: new Date(),
       userId: user.id
     });
 
-    // add services to appointment
-    attachServices(newAppointment, serviceId);
-
     // create maintenance record
     const newMaintenanceRecord = await MaintenanceRecord.create({
       ...newAppointment,
+      vehicleId: newAppointment.vehicleId,
       appointmentId: newAppointment.id,
+      serviceId: newAppointment.serviceId,
+      description: newAppointment.note,
       userId: user.id
     });
 
@@ -140,6 +152,9 @@ const createServiceRequest = async (req, res) => {
     });
   }
 
+  // add services to appointment
+  attachServices(appointment, serviceId, res);
+
   // create service request with existing appointment
   const newAppointment = await appointment.update({
     ...appointment,
@@ -147,14 +162,15 @@ const createServiceRequest = async (req, res) => {
     updatedBy: user.id
   });
 
-  // add services to appointment
-  attachServices(newAppointment, serviceId);
-
   // create maintenance record
   const newMaintenanceRecord = await MaintenanceRecord.create({
+    ...newAppointment,
     startDate: newAppointment.date,
     description: newAppointment.note,
-    vehicleId: newAppointment.vehicleId
+    vehicleId: newAppointment.vehicleId,
+    appointmentId: newAppointment.id,
+    serviceId: newAppointment.serviceId,
+    userId: user.id
   });
 
   res.status(201).json({
