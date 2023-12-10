@@ -2,6 +2,7 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const User = require('./user');
 const Vehicle = require('./vehicle');
+const Service = require('./service');
 
 const Appointment = sequelize.define(
   'Appointment',
@@ -10,19 +11,19 @@ const Appointment = sequelize.define(
       type: DataTypes.DATE,
       allowNull: false
     },
-    serviceRequest: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
-      allowNull: false
-    },
     note: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     },
     status: {
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: 'pending',
       values: ['pending', 'approved', 'rejected', 'completed']
+    },
+    serviceId: {
+      type: DataTypes.ARRAY(DataTypes.INTEGER),
+      allowNull: true
     },
     updatedBy: {
       type: DataTypes.INTEGER,
@@ -48,5 +49,12 @@ Appointment.belongsTo(User, { foreignKey: 'userId' });
 // Define the one-to-many relationship for Vehicle and Appointment
 Vehicle.hasMany(Appointment, { foreignKey: 'vehicleId' });
 Appointment.belongsTo(Vehicle, { foreignKey: 'vehicleId' });
+
+// Define the many-to-many relationship for Appointment and Service
+Appointment.belongsToMany(Service, {
+  through: 'AppointmentService',
+  foreignKey: 'appointmentId',
+  otherKey: 'serviceId'
+});
 
 module.exports = Appointment;

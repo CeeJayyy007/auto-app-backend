@@ -47,7 +47,7 @@ const updateService = async (req, res) => {
   console.log('user', user, 'serviceId', serviceId);
 
   // check user role
-  checkUserRole(user, res);
+  checkUserRole(['admin', 'superAdmin'], user, res);
 
   // check if service exists
   const service = await Service.findByPk(serviceId);
@@ -87,7 +87,7 @@ const deleteService = async (req, res) => {
   const user = req.user;
 
   // check user role
-  checkUserRole(user, res);
+  checkUserRole(['admin', 'superAdmin'], user, res);
 
   // check if service exists
   const service = await Service.findByPk(serviceId);

@@ -1,12 +1,11 @@
 const bcrypt = require('bcrypt');
-const logger = require('../config/logging');
 const User = require('../models/user');
 const Vehicle = require('../models/vehicle');
 const Appointment = require('../models/appointment');
 const Inventory = require('../models/inventory');
-const { checkUserRole } = require('../middlewares/authMiddleware');
-const e = require('express');
 const Service = require('../models/service');
+const { checkUserRole } = require('../middlewares/authMiddleware');
+const attachServices = require('./helpers/attachServices');
 
 // Create a new user
 const createUser = async (req, res) => {
@@ -59,12 +58,14 @@ const addUserVehicle = async (req, res) => {
 
 // Create a new appointment
 const createAppointment = async (req, res) => {
-  const { date, vehicleId } = req.validatedData;
+  const { date, vehicleId, serviceId } = req.validatedData;
   const user = req.user;
 
   if (!user) {
     return res.status(404).json({ error: 'User not found' });
   }
+
+  checkUserRole(['user'], user, res);
 
   // check that vehicle belongs to user
   const vehicle = await user.getVehicles({
@@ -75,9 +76,23 @@ const createAppointment = async (req, res) => {
     return res.status(404).json({ error: 'Vehicle not found' });
   }
 
+  // check if all service exists
+  const service = await Service.findByAll({
+    where: { id: serviceId }
+  });
+
+  if (!service[0]) {
+    return res.status(404).json({ error: 'Service not found' });
+  }
+
   // check if appointment exists
   const existingAppointment = await Appointment.findOne({
-    where: { date: date, vehicleId: vehicleId, userId: user.id }
+    where: {
+      date: date,
+      vehicleId: vehicleId,
+      serviceId: serviceId,
+      userId: user.id
+    }
   });
 
   if (existingAppointment) {
@@ -88,8 +103,6 @@ const createAppointment = async (req, res) => {
   const appointments = await Appointment.findAll({
     where: { date: date, vehicleId: vehicleId, userId: user.id }
   });
-
-  console.log('existing', appointments);
 
   if (appointments.length >= 3) {
     return res
@@ -104,6 +117,9 @@ const createAppointment = async (req, res) => {
     vehicleId: vehicleId
   });
 
+  // attach services to appointment
+  attachServices(appointment, serviceId);
+
   res.status(201).json({ appointment, vehicle, user });
 };
 
@@ -113,7 +129,7 @@ const createInventory = async (req, res) => {
   const user = req.user;
 
   // check user role
-  checkUserRole(user, res);
+  checkUserRole(['admin', 'superAdmin'], user, res);
 
   // check if inventory exists
   const existingInventory = await Inventory.findOne({
@@ -139,7 +155,7 @@ const createService = async (req, res) => {
   const user = req.user;
 
   // check user role
-  checkUserRole(user, res);
+  checkUserRole(['admin', 'superAdmin'], user, res);
 
   // check if service exists
   const existingService = await Service.findOne({
@@ -190,10 +206,10 @@ const updateUser = async (req, res) => {
     password = await bcrypt.hash(password, 10);
   }
 
-  console.log('roles', roles, 'permissions', permissions, user.roles);
+  const isSuperAdmin = checkUserRole(['superAdmin'], user, res);
 
   // if user is not superadmin, they can not update roles or permissions
-  if (user.roles !== 'superAdmin') {
+  if (!isSuperAdmin) {
     if (roles || permissions) {
       return res.status(401).json({
         error: 'You are not authorized to update roles or permissions'

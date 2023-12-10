@@ -16,6 +16,7 @@ const { morganMiddleware } = require('./config/logging');
 const unknownEndpoint = require('./middlewares/unknownEndpoint');
 const morgan = require('morgan');
 const swaggerDocs = require('./swagger-ui/swagger');
+const maintenanceRecordsRouter = require('./routes/maintenancerecordRoutes');
 
 // middlewares
 app.use(bodyParser.json());
@@ -33,6 +34,7 @@ app.use('/api/vehicles', vehiclesRouter);
 app.use('/api/appointments', appointmentsRouter);
 app.use('/api/inventory', inventoryRouter);
 app.use('/api/services', servicesRouter);
+app.use('/api/maintenance-records', maintenanceRecordsRouter);
 
 // middleware for testing purposes
 if (process.env.NODE_ENV === 'test') {
