@@ -68,7 +68,7 @@ const login = async (req, res) => {
 
   // Generate and send an authentication token
   const token = generateToken(user);
-  res.status(200).json({ token, user: sanitizedUser });
+  res.status(200).json({ token, ...sanitizedUser });
 };
 
 module.exports = { register, login };
