@@ -40,7 +40,7 @@ const register = async (req, res) => {
 
   // Generate and send an authentication token
   const token = generateToken(sanitizedUser);
-  res.status(201).send({ token, user: sanitizedUser });
+  res.status(201).send({ token, ...sanitizedUser });
 };
 
 const login = async (req, res) => {
