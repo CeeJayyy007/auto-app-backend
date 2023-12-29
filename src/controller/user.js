@@ -192,7 +192,14 @@ const getUserById = async (req, res) => {
     res.status(404).json({ error: 'User not found' });
     return;
   }
-  res.status(200).json(user);
+
+  // get user vehicles
+  const vehicles = await user.getVehicles();
+
+  // get user appointments
+  const appointments = await user.getAppointments();
+
+  res.status(200).json({ user, vehicles, appointments });
 };
 
 // Update a user by ID
