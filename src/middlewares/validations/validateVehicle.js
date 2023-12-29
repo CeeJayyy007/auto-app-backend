@@ -8,7 +8,7 @@ const vehicleSchema = Joi.object({
     .min(1900)
     .max(new Date().getFullYear())
     .required(),
-  registration_number: Joi.string().min(3).max(9).required(),
+  registrationNumber: Joi.string().min(3).max(9).required(),
   avatar: Joi.string().allow(null)
 });
 
@@ -20,7 +20,7 @@ const validatePartialVehicleSchema = Joi.object({
   make: Joi.string().min(3).max(30),
   model: Joi.string().min(3).max(30),
   year: Joi.number().integer().min(1900).max(new Date().getFullYear()),
-  registration_number: Joi.string().min(3).max(9),
+  registrationNumber: Joi.string().min(3).max(9),
   avatar: Joi.string(),
   updatedBy: Joi.number(),
   deletedAt: Joi.date()

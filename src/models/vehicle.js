@@ -17,7 +17,7 @@ const Vehicle = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    registration_number: {
+    registrationNumber: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true
