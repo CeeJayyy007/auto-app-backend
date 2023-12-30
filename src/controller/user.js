@@ -28,7 +28,7 @@ const createUser = async (req, res) => {
 // Create a new vehicle
 const addUserVehicle = async (req, res) => {
   const { userId } = req.validatedUserId;
-  const { registration_number } = req.validatedData;
+  const { registrationNumber } = req.validatedData;
 
   // check if user exists
   const existingUser = await User.findByPk(userId);
@@ -39,7 +39,7 @@ const addUserVehicle = async (req, res) => {
 
   // check if vehicle exists
   const existingVehicle = await Vehicle.findOne({
-    where: { registration_number: registration_number }
+    where: { registrationNumber: registrationNumber }
   });
 
   if (existingVehicle) {
