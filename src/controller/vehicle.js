@@ -1,3 +1,4 @@
+const Appointment = require('../models/appointment');
 const Vehicle = require('../models/vehicle');
 
 // Get all vehicles
@@ -84,7 +85,20 @@ const deleteVehicle = async (req, res) => {
     return;
   }
 
-  // Delete the vehicle
+  // Check if there are related appointments
+  const appointments = await Appointment.findAll({
+    where: { vehicleId: vehicle.id }
+  });
+
+  if (appointments.length > 0) {
+    res.status(404).json({
+      error:
+        'Cannot delete. There are appointments associated with this vehicle.'
+    });
+    return;
+  }
+
+  // If no related appointments, delete the vehicle
   await vehicle.destroy();
   res.status(204).send();
 };
