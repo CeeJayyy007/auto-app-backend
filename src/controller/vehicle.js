@@ -91,7 +91,7 @@ const deleteVehicle = async (req, res) => {
   });
 
   if (appointments.length > 0) {
-    res.status(404).json({
+    res.status(401).json({
       error:
         'Cannot delete. There are appointments associated with this vehicle.'
     });
@@ -100,7 +100,7 @@ const deleteVehicle = async (req, res) => {
 
   // If no related appointments, delete the vehicle
   await vehicle.destroy();
-  res.status(204).json({ message: 'Vehicle deleted successfully' });
+  res.status(204).send();
 };
 
 module.exports = {
