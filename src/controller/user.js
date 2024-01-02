@@ -53,7 +53,13 @@ const addUserVehicle = async (req, res) => {
     userId: userId
   });
 
-  res.status(201).json({ vehicle, user: existingUser });
+  res
+    .status(201)
+    .json({
+      vehicle,
+      user: existingUser,
+      message: 'Vehicle added successfully!'
+    });
 };
 
 // Create a new appointment

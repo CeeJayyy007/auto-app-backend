@@ -4,7 +4,7 @@ const Vehicle = require('../models/vehicle');
 // Get all vehicles
 const getVehicles = async (req, res) => {
   const vehicles = await Vehicle.findAll();
-  res.status(200).json(vehicles);
+  res.status(200).json({ vehicles, message: 'Vehicles found' });
 };
 
 // Get a specific vehicle by ID
@@ -18,7 +18,7 @@ const getVehicleById = async (req, res) => {
     res.status(404).json({ error: 'Vehicle not found' });
     return;
   }
-  res.status(200).json(vehicle);
+  res.status(200).json({ vehicle, message: 'Vehicle found' });
 };
 
 // Get a vehicle and the user associated with it
@@ -35,7 +35,7 @@ const getVehicleAndUser = async (req, res) => {
 
   const user = await vehicle.getUser();
 
-  res.status(200).json({ vehicle, user });
+  res.status(200).json({ vehicle, user, message: 'Vehicle found' });
 };
 
 // Update a vehicle by ID
@@ -68,7 +68,7 @@ const updateVehicle = async (req, res) => {
   const updatedVehicle = await Vehicle.findByPk(vehicleId);
 
   res.status(200).json({
-    updatedVehicle: updatedVehicle,
+    vehicle: updatedVehicle,
     message: 'Vehicle updated successfully'
   });
 };
@@ -100,7 +100,7 @@ const deleteVehicle = async (req, res) => {
 
   // If no related appointments, delete the vehicle
   await vehicle.destroy();
-  res.status(204).send();
+  res.status(204).json({ message: 'Vehicle deleted successfully' });
 };
 
 module.exports = {
