@@ -12,9 +12,7 @@ const errorHandler = (error, _, res, __) => {
   res.status(code).json({
     success: false,
     statusCode: code,
-    data: {
-      error: error?.data?.error ?? error?.data?.message ?? error.message
-    }
+    error: error?.data?.error ?? error?.data?.message ?? error.message
   });
 };
 
