@@ -53,13 +53,11 @@ const addUserVehicle = async (req, res) => {
     userId: userId
   });
 
-  res
-    .status(201)
-    .json({
-      vehicle,
-      user: existingUser,
-      message: 'Vehicle added successfully!'
-    });
+  res.status(201).json({
+    vehicle,
+    user: existingUser,
+    message: 'Vehicle added successfully!'
+  });
 };
 
 // Create a new appointment
@@ -205,7 +203,14 @@ const getUserById = async (req, res) => {
   // get user appointments
   const appointments = await user.getAppointments();
 
-  res.status(200).json({ user, vehicles, appointments });
+  res
+    .status(200)
+    .json({
+      user,
+      vehicles,
+      appointments,
+      message: 'User and their details found sucessfully!'
+    });
 };
 
 // Update a user by ID

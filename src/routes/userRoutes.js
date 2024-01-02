@@ -66,11 +66,7 @@ usersRouter.get('/', userController.getUsers);
  *      500:
  *        description: Server Error
  */
-usersRouter.get(
-  '/:userId',
-  authMiddleware.userExtractor,
-  userController.getUserById
-);
+usersRouter.get('/:userId', userController.getUserById);
 
 usersRouter.post('/', validateRegistration, userController.createUser);
 
