@@ -2,6 +2,8 @@ const { checkUserRole } = require('../middlewares/authMiddleware');
 const Appointment = require('../models/appointment');
 const MaintenanceRecord = require('../models/maintenanceRecord');
 const Service = require('../models/service');
+const User = require('../models/user');
+const Vehicle = require('../models/vehicle');
 const attachServices = require('./helpers/attachServices');
 
 // Get all appointments
@@ -12,22 +14,33 @@ const getAppointments = async (req, res) => {
 
 // Get a specific appointment by ID
 const getAppointmentById = async (req, res) => {
-  const { appointmentId } = req.validatedAppointmentId;
+  const { userId } = req.params;
 
   // check if appointment exists
-  const appointment = await Appointment.findByPk(appointmentId, {
+  const appointments = await Appointment.findAll({
+    where: { userId: userId },
     include: [
       {
-        model: Service
+        model: Service,
+        attributes: ['id', 'name', 'description', 'price', 'avatar']
+      },
+      {
+        model: User,
+        attributes: ['id', 'firstName', 'lastName', 'email', 'avatar']
+      },
+      {
+        model: Vehicle,
+        attributes: ['id', 'make', 'model', 'year', 'registrationNumber']
       }
     ]
   });
 
-  if (!appointment) {
+  if (!appointments) {
     res.status(404).json({ error: 'Appointment not found' });
     return;
   }
-  res.status(200).json(appointment);
+
+  res.status(200).json({ appointments, message: 'Appointment found' });
 };
 
 // Get a appointment and the user associated with it
@@ -43,7 +56,7 @@ const getAppointmentAndUser = async (req, res) => {
 
   const user = await appointment.getUser();
 
-  res.status(200).json({ appointment, user });
+  res.status(200).json({ appointment, user, message: 'Appointment found' });
 };
 
 // Update an appointment by ID
