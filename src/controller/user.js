@@ -203,14 +203,12 @@ const getUserById = async (req, res) => {
   // get user appointments
   const appointments = await user.getAppointments();
 
-  res
-    .status(200)
-    .json({
-      user,
-      vehicles,
-      appointments,
-      message: 'User and their details found sucessfully!'
-    });
+  res.status(200).json({
+    user,
+    vehicles,
+    appointments,
+    message: 'User and their details found sucessfully!'
+  });
 };
 
 // Update a user by ID
@@ -276,7 +274,7 @@ const deleteUser = async (req, res) => {
     return;
   }
 
-  res.status(200).json({ message: 'User deleted successfully' });
+  res.status(200).send();
 };
 
 module.exports = {

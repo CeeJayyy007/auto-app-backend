@@ -23,7 +23,7 @@ const getAttachmentById = async (req, res) => {
     return;
   }
 
-  res.status(200).json(attachment);
+  res.status(200).json({ attachment, message: 'Attachment found' });
 };
 
 // Update a attachment by ID
