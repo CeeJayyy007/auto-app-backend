@@ -14,33 +14,40 @@ const getAppointments = async (req, res) => {
 
 // Get a specific appointment by ID
 const getAppointmentById = async (req, res) => {
-  const { userId } = req.params;
+  const { appointmentId } = req.validatedAppointmentId;
 
   // check if appointment exists
-  const appointments = await Appointment.findAll({
-    where: { userId: userId },
-    include: [
-      {
-        model: Service,
-        attributes: ['id', 'name', 'description', 'price', 'avatar']
-      },
-      {
-        model: User,
-        attributes: ['id', 'firstName', 'lastName', 'email', 'avatar']
-      },
-      {
-        model: Vehicle,
-        attributes: ['id', 'make', 'model', 'year', 'registrationNumber']
-      }
-    ]
-  });
+  const appointment = await Appointment.findByPk(appointmentId);
 
-  if (!appointments) {
+  if (!appointment) {
     res.status(404).json({ error: 'Appointment not found' });
     return;
   }
 
-  res.status(200).json({ appointments, message: 'Appointment found' });
+  // const appointments = await Appointment.findAll({
+  //   where: { userId: userId },
+  //   include: [
+  //     {
+  //       model: Service,
+  //       attributes: ['id', 'name', 'description', 'price', 'avatar']
+  //     },
+  //     {
+  //       model: User,
+  //       attributes: ['id', 'firstName', 'lastName', 'email', 'avatar']
+  //     },
+  //     {
+  //       model: Vehicle,
+  //       attributes: ['id', 'make', 'model', 'year', 'registrationNumber']
+  //     }
+  //   ]
+  // });
+
+  // if (!appointments) {
+  //   res.status(404).json({ error: 'Appointment not found' });
+  //   return;
+  // }
+
+  res.status(200).json({ appointment, message: 'Appointment found' });
 };
 
 // Get a appointment and the user associated with it

@@ -52,8 +52,8 @@ appointmentsRouter.get('/', appointmentController.getAppointments);
  *        description: Server Error
  */
 appointmentsRouter.get(
-  '/:userId',
-  // validateAppointmentsId,
+  '/:appointmentId',
+  validateAppointmentsId,
   appointmentController.getAppointmentById
 );
 
