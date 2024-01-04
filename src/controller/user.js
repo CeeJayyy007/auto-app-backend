@@ -190,23 +190,41 @@ const getUserById = async (req, res) => {
   const { userId } = req.params;
 
   // check if user exists
-  const user = await User.findByPk(userId);
+  // const user = await User.findByPk(userId);
 
-  if (!user) {
+  // if (!user) {
+  //   res.status(404).json({ error: 'User not found' });
+  //   return;
+  // }
+
+  // // get user vehicles
+  // const vehicles = await user.getVehicles();
+
+  // // get user appointments
+  // const appointments = await user.getAppointments();
+
+  const user = await User.findAll({
+    where: { id: userId },
+    include: [
+      {
+        model: Service
+      },
+      {
+        model: Appointment
+      },
+      {
+        model: Vehicle
+      }
+    ]
+  });
+
+  if (!user || user.length === 0) {
     res.status(404).json({ error: 'User not found' });
     return;
   }
 
-  // get user vehicles
-  const vehicles = await user.getVehicles();
-
-  // get user appointments
-  const appointments = await user.getAppointments();
-
   res.status(200).json({
     user,
-    vehicles,
-    appointments,
     message: 'User and their details found sucessfully!'
   });
 };
