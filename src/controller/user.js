@@ -81,7 +81,7 @@ const createAppointment = async (req, res) => {
   }
 
   // check if all service exists
-  const service = await Service.findByAll({
+  const service = await Service.findAll({
     where: { id: serviceId }
   });
 
@@ -114,9 +114,13 @@ const createAppointment = async (req, res) => {
       .json({ error: 'Appointment limit reached for this day' });
   }
 
+  // convert date to ISO string format
+  const originalDate = new Date(req.validatedData.date);
+
   // Create a new appointment
   const appointment = await Appointment.create({
     ...req.validatedData,
+    date: originalDate.toISOString(),
     userId: user.id,
     vehicleId: vehicleId
   });
@@ -188,20 +192,6 @@ const getUsers = async (req, res) => {
 // Get a specific user by ID
 const getUserById = async (req, res) => {
   const { userId } = req.params;
-
-  // check if user exists
-  // const user = await User.findByPk(userId);
-
-  // if (!user) {
-  //   res.status(404).json({ error: 'User not found' });
-  //   return;
-  // }
-
-  // // get user vehicles
-  // const vehicles = await user.getVehicles();
-
-  // // get user appointments
-  // const appointments = await user.getAppointments();
 
   const user = await User.findAll({
     where: { id: userId },
