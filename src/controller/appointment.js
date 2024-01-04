@@ -24,29 +24,6 @@ const getAppointmentById = async (req, res) => {
     return;
   }
 
-  // const appointments = await Appointment.findAll({
-  //   where: { userId: userId },
-  //   include: [
-  //     {
-  //       model: Service,
-  //       attributes: ['id', 'name', 'description', 'price', 'avatar']
-  //     },
-  //     {
-  //       model: User,
-  //       attributes: ['id', 'firstName', 'lastName', 'email', 'avatar']
-  //     },
-  //     {
-  //       model: Vehicle,
-  //       attributes: ['id', 'make', 'model', 'year', 'registrationNumber']
-  //     }
-  //   ]
-  // });
-
-  // if (!appointments) {
-  //   res.status(404).json({ error: 'Appointment not found' });
-  //   return;
-  // }
-
   res.status(200).json({ appointment, message: 'Appointment found' });
 };
 
