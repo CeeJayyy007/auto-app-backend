@@ -80,8 +80,7 @@ appointmentsRouter.get(
  *        description: Server Error
  */
 appointmentsRouter.get(
-  '/:appointmentId/user',
-  validateAppointmentsId,
+  '/appointment-details/:userId',
   appointmentController.getAppointmentAndUser
 );
 

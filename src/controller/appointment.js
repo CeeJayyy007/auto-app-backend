@@ -29,18 +29,32 @@ const getAppointmentById = async (req, res) => {
 
 // Get a appointment and the user associated with it
 const getAppointmentAndUser = async (req, res) => {
-  const { appointmentId } = req.validatedAppointmentId;
+  const { userId } = req.params;
+
+  console.log('userId', userId);
 
   // check if appointment exists
-  const appointment = await Appointment.findByPk(appointmentId);
+  const appointments = await Appointment.findAll({
+    where: { userId: userId },
+    include: [
+      {
+        model: Service
+      },
+      {
+        model: User
+      },
+      {
+        model: Vehicle
+      }
+    ]
+  });
 
-  if (!appointment) {
-    return res.status(404).json({ error: 'Appointment not found' });
+  if (!appointments) {
+    res.status(404).json({ error: 'Appointment not found' });
+    return;
   }
 
-  const user = await appointment.getUser();
-
-  res.status(200).json({ appointment, user, message: 'Appointment found' });
+  res.status(200).json({ appointments, message: 'Appointment found' });
 };
 
 // Update an appointment by ID
