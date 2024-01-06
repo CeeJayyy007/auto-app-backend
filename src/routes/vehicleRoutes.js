@@ -28,11 +28,7 @@ const {
  *      500:
  *        description: Server Error
  */
-vehiclesRouter.get(
-  '/',
-  authMiddleware.userExtractor,
-  vehicleController.getVehicles
-);
+vehiclesRouter.get('/', vehicleController.getVehicles);
 
 /**
  * @openapi

@@ -29,11 +29,7 @@ const {
  *      500:
  *        description: Server Error
  */
-servicesRouter.get(
-  '/',
-  authMiddleware.userExtractor,
-  serviceController.getServices
-);
+servicesRouter.get('/', serviceController.getServices);
 
 /**
  * @openapi
