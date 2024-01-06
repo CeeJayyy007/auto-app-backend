@@ -21,14 +21,14 @@ const Appointment = sequelize.define(
       allowNull: true
     },
     status: {
-      type: DataTypes.STRING,
+      type: DataTypes.ENUM('Pending', 'In-Progress', 'Canceled', 'Completed'),
       allowNull: false,
-      defaultValue: 'pending',
-      values: ['pending', 'approved', 'rejected', 'completed']
+      defaultValue: 'pending'
     },
     serviceId: {
       type: DataTypes.ARRAY(DataTypes.INTEGER),
-      allowNull: true
+      allowNull: true,
+      defaultValue: []
     },
     updatedBy: {
       type: DataTypes.INTEGER,
