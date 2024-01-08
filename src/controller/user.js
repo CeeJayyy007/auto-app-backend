@@ -62,7 +62,7 @@ const addUserVehicle = async (req, res) => {
 
 // Create a new appointment
 const createAppointment = async (req, res) => {
-  const { date, vehicleId, serviceId } = req.validatedData;
+  const { date, time, vehicleId, serviceId } = req.validatedData;
   const user = req.user;
 
   if (!user) {
@@ -93,6 +93,7 @@ const createAppointment = async (req, res) => {
   const existingAppointment = await Appointment.findOne({
     where: {
       date: date,
+      time,
       vehicleId: vehicleId,
       serviceId: serviceId,
       userId: user.id
@@ -105,7 +106,7 @@ const createAppointment = async (req, res) => {
 
   // limit number of appointments to 3 per day (fix this later)
   const appointments = await Appointment.findAll({
-    where: { date: date, vehicleId: vehicleId, userId: user.id }
+    where: { date: date, time: time, vehicleId: vehicleId, userId: user.id }
   });
 
   if (appointments.length >= 3) {
