@@ -14,7 +14,7 @@ const Appointment = sequelize.define(
     time: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: '8:00'
+      defaultValue: '08:00'
     },
     note: {
       type: DataTypes.STRING,
