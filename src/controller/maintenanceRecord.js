@@ -95,7 +95,7 @@ const updateMaintenanceRecord = async (req, res) => {
   }
 
   // if status is completed, update the appointment status to completed
-  if (appointmentStatus === 'completed') {
+  if (appointmentStatus === 'Completed') {
     // Update the appointment
     const [updatedRows] = await Appointment.update(
       { status: appointmentStatus, updatedBy: user.id, serviceId: serviceId },
