@@ -31,8 +31,6 @@ const getAppointmentById = async (req, res) => {
 const getAppointmentAndUser = async (req, res) => {
   const { userId } = req.params;
 
-  console.log('userId', userId);
-
   // check if appointment exists
   const appointments = await Appointment.findAll({
     where: { userId: userId },
@@ -79,6 +77,14 @@ const updateAppointment = async (req, res) => {
     return;
   }
 
+  // check if appointment is not pending and reject any additional updates
+  if (appointment.status !== 'Pending') {
+    res.status(401).json({
+      error: "You can not update an appointment once it's no longer pending"
+    });
+    return;
+  }
+
   // update appointment services
   attachServices(appointment, serviceId, res);
 
@@ -109,7 +115,9 @@ const createServiceRequest = async (req, res) => {
   const { appointmentId, serviceId, vehicleId } =
     req.validatedPartialAppointment;
   const user = req.user;
-  const appointmentStatus = 'approved';
+  const appointmentStatus = 'In-Progress';
+
+  console.log('appointmentId', appointmentId);
 
   // check if user has authorization to create service request
   checkUserRole(['admin', 'superAdmin'], user, res);
@@ -132,9 +140,6 @@ const createServiceRequest = async (req, res) => {
     ]
   });
 
-  // add services to appointment
-  attachServices(newAppointment, serviceId, res);
-
   // create service request if appointment does not exist
   if (!appointment) {
     // create appointment
@@ -145,6 +150,9 @@ const createServiceRequest = async (req, res) => {
       date: new Date(),
       userId: user.id
     });
+
+    // add services to appointment
+    attachServices(newAppointment, serviceId, res);
 
     // create maintenance record
     const newMaintenanceRecord = await MaintenanceRecord.create({
@@ -163,15 +171,15 @@ const createServiceRequest = async (req, res) => {
     });
   }
 
-  // add services to appointment
-  attachServices(appointment, serviceId, res);
-
   // create service request with existing appointment
   const newAppointment = await appointment.update({
     ...appointment,
     status: appointmentStatus,
     updatedBy: user.id
   });
+
+  // add services to appointment
+  attachServices(newAppointment, serviceId, res);
 
   // create maintenance record
   const newMaintenanceRecord = await MaintenanceRecord.create({
