@@ -87,6 +87,7 @@ const updateInventory = async (req, res) => {
 // Delete a inventory by ID
 const deleteInventory = async (req, res) => {
   const { inventoryId } = req.validatedInventoryId;
+  const user = req.user;
 
   // check user role
   checkUserRole(['admin', 'superAdmin'], user, res);
@@ -99,10 +100,16 @@ const deleteInventory = async (req, res) => {
     return;
   }
 
-  // Delete the inventory
-  await Inventory.destroy({ where: { id: inventoryId } });
+  const deletedRows = await Inventory.destroy({
+    where: { id: inventoryId }
+  });
 
-  res.status(200).json({ message: 'Inventory deleted successfully' });
+  if (deletedRows === 0) {
+    res.status(404).json({ error: 'Inventory not found' });
+    return;
+  }
+
+  res.status(200).send();
 };
 
 module.exports = {
