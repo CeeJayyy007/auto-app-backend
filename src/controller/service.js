@@ -44,8 +44,6 @@ const updateService = async (req, res) => {
   const { serviceId } = req.validatedServiceId;
   const user = req.user;
 
-  console.log('user', user, 'serviceId', serviceId);
-
   // check user role
   checkUserRole(['admin', 'superAdmin'], user, res);
 

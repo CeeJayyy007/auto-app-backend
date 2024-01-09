@@ -3,6 +3,7 @@ const joi = require('joi');
 const validateServiceSchema = joi.object({
   name: joi.string().required().error(new Error('Name is required')),
   price: joi.number().required().error(new Error('Price is required')),
+  duration: joi.number().required().error(new Error('Duration is required')),
   description: joi
     .string()
     .required()
@@ -17,6 +18,7 @@ const validatePartialServiceSchema = joi.object({
   name: joi.string(),
   price: joi.number(),
   description: joi.string(),
+  duration: joi.number(),
   avatar: joi.string(),
   updatedBy: joi.number(),
   deletedAt: joi.date()
