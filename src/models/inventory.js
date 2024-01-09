@@ -27,6 +27,11 @@ const Inventory = sequelize.define(
       allowNull: false,
       defaultValue: 1
     },
+    status: {
+      type: DataTypes.ENUM('Low Stock', 'In Stock', 'Out of Stock'),
+      allowNull: false,
+      defaultValue: 'In Stock'
+    },
     finalPrice: {
       type: DataTypes.DECIMAL(12, 2),
       allowNull: false

@@ -155,7 +155,9 @@ const createInventory = async (req, res) => {
     userId: user.id
   });
 
-  res.status(201).json(inventory, user);
+  res
+    .status(201)
+    .json({ inventory, message: 'Inventory item created Successfully!' });
 };
 
 // Create a new service
@@ -181,7 +183,9 @@ const createService = async (req, res) => {
     userId: user.id
   });
 
-  res.status(201).json({ service: newService });
+  res
+    .status(201)
+    .json({ service: newService, message: 'Service created Successfully' });
 };
 
 // Get all users

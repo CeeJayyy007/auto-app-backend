@@ -98,7 +98,7 @@ const deleteService = async (req, res) => {
   // Delete the service
   await service.destroy();
 
-  res.status(204).end({ message: 'Service deleted successfully' });
+  res.status(204).send();
 };
 
 module.exports = {

@@ -216,7 +216,7 @@ const deleteAppointment = async (req, res) => {
     where: { id: appointmentId }
   });
 
-  res.status(204).json({ message: 'Appointment deleted successfully' });
+  res.status(204).send();
 };
 
 module.exports = {

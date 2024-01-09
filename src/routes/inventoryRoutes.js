@@ -28,11 +28,7 @@ const {
  *      500:
  *        description: Server Error
  */
-inventoryRouter.get(
-  '/',
-  authMiddleware.userExtractor,
-  inventoryController.getInventory
-);
+inventoryRouter.get('/', inventoryController.getInventory);
 
 /**
  * @openapi
