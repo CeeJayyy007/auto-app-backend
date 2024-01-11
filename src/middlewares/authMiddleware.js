@@ -58,11 +58,8 @@ const isValidPassword = (password) => {
 // check if user has admin or superAdmin role
 const checkUserRole = (requiredRoles, existingUser, res) => {
   if (!requiredRoles.includes(existingUser.roles)) {
-    return res
-      .status(401)
-      .json({ error: 'You are not authorized to carry out this activity' });
+    return false;
   }
-
   return true;
 };
 
