@@ -88,8 +88,7 @@ maintenanceRecordsRouter.get(
  *        description: Server Error
  */
 maintenanceRecordsRouter.get(
-  '/:maintenanceRecordId/user',
-  validateMaintenanceRecordsId,
+  '/activities-details/:userId',
   maintenanceRecordController.getMaintenanceRecordAndUser
 );
 
