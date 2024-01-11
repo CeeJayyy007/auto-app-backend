@@ -11,7 +11,7 @@ const validatePartialUserSchema = joi.object({
   email: joi.string().email(),
   phone: joi.string().min(10).max(15),
   avatar: joi.string(),
-  roles: joi.string().allow('admin', 'superAdmin', 'user'),
+  roles: joi.string().allow('Admin', 'Super Admin', 'User'),
   permissions: joi.string(),
   password: joi.string().min(8),
   updatedBy: joi.number(),
