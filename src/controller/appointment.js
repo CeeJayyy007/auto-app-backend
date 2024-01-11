@@ -112,8 +112,12 @@ const updateAppointment = async (req, res) => {
 
 // create service request
 const createServiceRequest = async (req, res) => {
-  const { appointmentId, serviceId, vehicleId } =
-    req.validatedPartialAppointment;
+  const {
+    appointmentId,
+    serviceId,
+    vehicleId,
+    userId: appointmentUserId
+  } = req.validatedPartialAppointment;
   const user = req.user;
   const appointmentStatus = 'In-Progress';
 
@@ -156,7 +160,8 @@ const createServiceRequest = async (req, res) => {
       status: appointmentStatus,
       serviceId: serviceId,
       date: new Date(),
-      userId: user.id
+      userId: appointmentUserId,
+      updatedBy: user.id
     });
 
     // add services to appointment
@@ -168,8 +173,9 @@ const createServiceRequest = async (req, res) => {
       vehicleId: newAppointment.vehicleId,
       appointmentId: newAppointment.id,
       serviceId: newAppointment.serviceId,
-      description: newAppointment.note,
-      userId: user.id
+      note: newAppointment.note,
+      userId: appointmentUserId,
+      updatedBy: user.id
     });
 
     res.status(201).json({
@@ -193,11 +199,12 @@ const createServiceRequest = async (req, res) => {
   const newMaintenanceRecord = await MaintenanceRecord.create({
     ...newAppointment,
     startDate: newAppointment.date,
-    description: newAppointment.note,
+    note: newAppointment.note,
     vehicleId: newAppointment.vehicleId,
     appointmentId: newAppointment.id,
     serviceId: newAppointment.serviceId,
-    userId: user.id
+    userId: newAppointment.userId,
+    updatedBy: user.id
   });
 
   res.status(201).json({
