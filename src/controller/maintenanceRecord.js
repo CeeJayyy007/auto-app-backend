@@ -17,7 +17,17 @@ const getMaintenanceRecordById = async (req, res) => {
   const user = req.user;
 
   // check user role
-  checkUserRole(['admin', 'superAdmin'], user, res);
+  const isAdminOrSuperAdmin = checkUserRole(
+    ['Admin', 'Super Admin'],
+    user,
+    res
+  );
+
+  if (!isAdminOrSuperAdmin) {
+    return res
+      .status(401)
+      .json({ error: 'You are not authorized to retrieve maintenance record' });
+  }
 
   // check if maintenance record exists
   const maintenanceRecord =
@@ -36,7 +46,20 @@ const getMaintenanceRecordAndUser = async (req, res) => {
   const { maintenanceRecordId } = req.validatedMaintenanceRecordId;
 
   // check user role
-  checkUserRole(['admin', 'superAdmin'], user, res);
+  const isAdminOrSuperAdmin = checkUserRole(
+    ['Admin', 'Super Admin'],
+    user,
+    res
+  );
+
+  if (!isAdminOrSuperAdmin) {
+    return res
+      .status(401)
+      .json({
+        error:
+          'You are not authorized to retrieve maintenance record and user details'
+      });
+  }
 
   // check if maintenance record exists
   const maintenanceRecord =
@@ -63,7 +86,17 @@ const updateMaintenanceRecord = async (req, res) => {
   const user = req.user;
 
   // check user role
-  checkUserRole(['admin', 'superAdmin'], user, res);
+  const isAdminOrSuperAdmin = checkUserRole(
+    ['Admin', 'Super Admin'],
+    user,
+    res
+  );
+
+  if (!isAdminOrSuperAdmin) {
+    return res
+      .status(401)
+      .json({ error: 'You are not authorized to update maintenance record' });
+  }
 
   // check if maintenance record exists
   const maintenanceRecord =
@@ -168,7 +201,17 @@ const deleteMaintenanceRecord = async (req, res) => {
   const user = req.user;
 
   // check user role
-  checkUserRole(['admin', 'superAdmin'], user, res);
+  const isAdminOrSuperAdmin = checkUserRole(
+    ['Admin', 'Super Admin'],
+    user,
+    res
+  );
+
+  if (!isAdminOrSuperAdmin) {
+    return res
+      .status(401)
+      .json({ error: 'You are not authorized to delete maintenance record' });
+  }
 
   // check if maintenance record exists
   const maintenanceRecord =

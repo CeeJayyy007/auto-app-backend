@@ -45,7 +45,17 @@ const updateService = async (req, res) => {
   const user = req.user;
 
   // check user role
-  checkUserRole(['admin', 'superAdmin'], user, res);
+  const isAdminOrSuperAdmin = checkUserRole(
+    ['Admin', 'Super Admin'],
+    user,
+    res
+  );
+
+  if (!isAdminOrSuperAdmin) {
+    return res
+      .status(401)
+      .json({ error: 'You are not authorized to update service' });
+  }
 
   // check if service exists
   const service = await Service.findByPk(serviceId);
@@ -85,7 +95,17 @@ const deleteService = async (req, res) => {
   const user = req.user;
 
   // check user role
-  checkUserRole(['admin', 'superAdmin'], user, res);
+  const isAdminOrSuperAdmin = checkUserRole(
+    ['Admin', 'Super Admin'],
+    user,
+    res
+  );
+
+  if (!isAdminOrSuperAdmin) {
+    return res
+      .status(401)
+      .json({ error: 'You are not authorized to delete service' });
+  }
 
   // check if service exists
   const service = await Service.findByPk(serviceId);

@@ -117,10 +117,18 @@ const createServiceRequest = async (req, res) => {
   const user = req.user;
   const appointmentStatus = 'In-Progress';
 
-  console.log('appointmentId', appointmentId);
-
   // check if user has authorization to create service request
-  checkUserRole(['admin', 'superAdmin'], user, res);
+  const isAdminOrSuperAdmin = checkUserRole(
+    ['Admin', 'Super Admin'],
+    user,
+    res
+  );
+
+  if (!isAdminOrSuperAdmin) {
+    return res.status(401).json({
+      error: 'You are not authorized to create a service request'
+    });
+  }
 
   // check that vehicle belongs to user
   const vehicle = await user.getVehicles({

@@ -13,7 +13,14 @@ const getAttachmentById = async (req, res) => {
   const user = req.user;
 
   // check user role
-  checkUserRole(['admin', 'superAdmin'], user, res);
+
+  const isUser = checkUserRole(['Admin', 'SuperAdmin'], user, res);
+
+  if (!isUser) {
+    return res
+      .status(401)
+      .json({ error: 'You are not authorized to create attachments' });
+  }
 
   // check if attachment exists
   const attachment = await Attachment.findByPk(attachmentId);
@@ -32,7 +39,17 @@ const updateAttachment = async (req, res) => {
   const user = req.user;
 
   // check user role
-  checkUserRole(['admin', 'superAdmin'], user, res);
+  const isAdminOrSuperAdmin = checkUserRole(
+    ['Admin', 'Super Admin'],
+    user,
+    res
+  );
+
+  if (!isAdminOrSuperAdmin) {
+    return res
+      .status(401)
+      .json({ error: 'You are not authorized to update attachments' });
+  }
 
   // check if attachment exists
   const attachment = await Attachment.findByPk(attachmentId);
@@ -68,7 +85,17 @@ const deleteAttachment = async (req, res) => {
   const user = req.user;
 
   // check user role
-  checkUserRole(['admin', 'superAdmin'], user, res);
+  const isAdminOrSuperAdmin = checkUserRole(
+    ['Admin', 'Super Admin'],
+    user,
+    res
+  );
+
+  if (!isAdminOrSuperAdmin) {
+    return res
+      .status(401)
+      .json({ error: 'You are not authorized to update attachments' });
+  }
 
   // check if attachment exists
   const attachment = await Attachment.findByPk(attachmentId);
