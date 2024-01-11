@@ -19,7 +19,7 @@ const MaintenanceRecord = sequelize.define(
       allowNull: true,
       defaultValue: null
     },
-    description: {
+    note: {
       type: DataTypes.TEXT,
       allowNull: true
     },
@@ -33,16 +33,18 @@ const MaintenanceRecord = sequelize.define(
     },
     serviceId: {
       type: DataTypes.ARRAY(DataTypes.INTEGER),
-      allowNull: true
+      allowNull: true,
+      defaultValue: []
     },
     inventoryId: {
       type: DataTypes.ARRAY(DataTypes.INTEGER),
-      allowNull: true
+      allowNull: true,
+      defaultValue: []
     },
     duration: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: 0
+      defaultValue: 0 // Duration in days
     },
     updatedBy: {
       type: DataTypes.INTEGER,

@@ -8,7 +8,7 @@ const validatePartialMaintenanceRecordSchema = joi.object({
   maintenanceRecordId: joi.number(),
   date: joi.date(),
   status: joi.string(),
-  description: joi.string(),
+  note: joi.string(),
   updatedBy: joi.number(),
   deletedAt: joi.date(),
   serviceId: joi.array().items(joi.number()),
