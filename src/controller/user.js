@@ -9,8 +9,7 @@ const attachServices = require('./helpers/attachServices');
 
 // Create a new user
 const createUser = async (req, res) => {
-  const { email, password, firstName, lastName, username, phone } =
-    req.validatedData;
+  const { password } = req.validatedData;
 
   // Hash the password before storing it
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -69,7 +68,13 @@ const createAppointment = async (req, res) => {
     return res.status(404).json({ error: 'User not found' });
   }
 
-  checkUserRole(['user'], user, res);
+  const isUser = checkUserRole(['User'], user, res);
+
+  if (!isUser) {
+    return res
+      .status(401)
+      .json({ error: 'You are not authorized to create appointments' });
+  }
 
   // check that vehicle belongs to user
   const vehicle = await user.getVehicles({
@@ -138,7 +143,17 @@ const createInventory = async (req, res) => {
   const user = req.user;
 
   // check user role
-  checkUserRole(['admin', 'superAdmin'], user, res);
+  const isAdminOrSuperAdmin = checkUserRole(
+    ['Admin', 'Super Admin'],
+    user,
+    res
+  );
+
+  if (!isAdminOrSuperAdmin) {
+    return res
+      .status(401)
+      .json({ error: 'You are not authorized to create inventory' });
+  }
 
   // check if inventory exists
   const existingInventory = await Inventory.findOne({
@@ -166,7 +181,18 @@ const createService = async (req, res) => {
   const user = req.user;
 
   // check user role
-  checkUserRole(['admin', 'superAdmin'], user, res);
+  const isAdminOrSuperAdmin = checkUserRole(
+    ['Admin', 'Super Admin'],
+    user,
+    res
+  );
+
+  if (!isAdminOrSuperAdmin) {
+    return res
+
+      .status(401)
+      .json({ error: 'You are not authorized to create services' });
+  }
 
   // check if service exists
   const existingService = await Service.findOne({
@@ -227,19 +253,23 @@ const getUserById = async (req, res) => {
 // Update a user by ID
 const updateUser = async (req, res) => {
   const user = req.user;
+  const { roles } = req.validatedPartialUser;
 
-  const { password, roles, permissions } = req.validatedPartialUser;
+  const isSuperAdmin = checkUserRole(['Super Admin'], user, res);
 
-  // Hash the new password before updating (if provided)
-  if (password) {
-    password = await bcrypt.hash(password, 10);
+  const existingUser = await User.findByPk(user.id);
+
+  if (!existingUser) {
+    return res.status(404).json({ error: 'User not found' });
   }
 
-  const isSuperAdmin = checkUserRole(['superAdmin'], user, res);
+  // check existing roles and permissions
+  const existingRoles = existingUser.roles;
 
-  // if user is not superadmin, they can not update roles or permissions
-  if (!isSuperAdmin) {
-    if (roles || permissions) {
+  // check if user is trying to update roles or permissions
+  if (roles !== existingRoles) {
+    // check if user is super admin
+    if (!isSuperAdmin) {
       return res.status(401).json({
         error: 'You are not authorized to update roles or permissions'
       });
@@ -268,26 +298,59 @@ const updateUser = async (req, res) => {
 
 // Delete a user by ID
 const deleteUser = async (req, res) => {
-  const { userId } = req.params;
+  const user = req.user;
+  const { userId } = req.validatedUserId;
 
   // check if user exists
-  const user = await User.findByPk(userId);
+  const userToDelete = await User.findByPk(userId);
 
-  if (!user) {
+  if (!userToDelete) {
     res.status(404).json({ error: 'User not found' });
     return;
   }
 
-  const deletedRows = await User.destroy({
-    where: { id: user.id }
-  });
-
-  if (deletedRows === 0) {
-    res.status(404).json({ error: 'User not found' });
+  // check if user is same as userToDelete
+  if (user.id === userToDelete.id) {
+    res.status(401).json({ error: 'You can not delete yourself' });
     return;
   }
 
-  res.status(200).send();
+  const deletedRows = async (id) => {
+    const deleteUserRows = await User.destroy({
+      where: { id: id }
+    });
+
+    if (deleteUserRows === 0) {
+      res.status(404).json({ error: 'User not found' });
+      return;
+    }
+  };
+
+  // Check if the user is a Super Admin
+  if (checkUserRole(['Super Admin'], user, res)) {
+    // Super admin can delete any user
+    deletedRows(userToDelete.id);
+    res.status(200).send();
+  } else {
+    // Check if the user is an Admin
+    if (checkUserRole(['Admin'], user, res)) {
+      // Admin can delete a user
+      if (checkUserRole(['User'], userToDelete, res)) {
+        deletedRows(userToDelete.id);
+        return res.status(200).send();
+      } else {
+        // If the user being deleted is not authorized
+        return res
+          .status(401)
+          .json({ error: 'You are not authorized to delete Admin users' });
+      }
+    } else {
+      // If neither Super Admin nor Admin, not authorized
+      return res
+        .status(401)
+        .json({ error: 'You are not authorized to delete a user' });
+    }
+  }
 };
 
 module.exports = {
