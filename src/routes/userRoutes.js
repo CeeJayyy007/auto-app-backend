@@ -354,6 +354,7 @@ usersRouter.post(
 usersRouter.delete(
   '/:userId',
   authMiddleware.userExtractor,
+  validateUserId,
   userController.deleteUser
 );
 
