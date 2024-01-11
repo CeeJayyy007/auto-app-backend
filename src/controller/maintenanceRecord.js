@@ -1,6 +1,9 @@
 const MaintenanceRecord = require('../models/maintenanceRecord');
 const Appointment = require('../models/appointment');
 const Attachment = require('../models/attachment');
+const Service = require('../models/service');
+const Vehicle = require('../models/vehicle');
+const Inventory = require('../models/inventory');
 const { checkUserRole } = require('../middlewares/authMiddleware');
 const attachServices = require('./helpers/attachServices');
 const attachInventory = require('./helpers/attachInventory');
@@ -8,6 +11,7 @@ const attachInventory = require('./helpers/attachInventory');
 // Get all maintenance records
 const getMaintenanceRecords = async (req, res) => {
   const maintenanceRecords = await MaintenanceRecord.findAll();
+
   res.status(200).json(maintenanceRecords);
 };
 
@@ -43,36 +47,64 @@ const getMaintenanceRecordById = async (req, res) => {
 
 // Get a maintenance record and the user associated with it
 const getMaintenanceRecordAndUser = async (req, res) => {
-  const { maintenanceRecordId } = req.validatedMaintenanceRecordId;
+  const { userId } = req.params;
 
-  // check user role
-  const isAdminOrSuperAdmin = checkUserRole(
-    ['Admin', 'Super Admin'],
-    user,
-    res
+  // find all maintenance records for user
+  const userRecords = await MaintenanceRecord.findAll({
+    where: { userId: userId }
+  });
+
+  if (!userRecords) {
+    return res.status(404).json({ error: 'Activities records not found' });
+  }
+
+  // return all maintenance records for user with associated serviceId and vehiclesId
+  const userRecordsDetails = await Promise.all(
+    userRecords.map(async (record) => {
+      const { serviceId, vehicleId, inventoryId, ...rest } = record.get({
+        plain: true
+      });
+
+      let service = [];
+      let inventory = [];
+
+      if (serviceId.length !== 0) {
+        service = await Service.findAll({
+          where: { id: serviceId },
+          attributes: ['id', 'name'],
+          raw: true
+        });
+      }
+
+      if (inventoryId.length !== 0) {
+        inventory = await Inventory.findAll({
+          where: { id: inventoryId },
+          attributes: ['id', 'name'],
+          raw: true
+        });
+      }
+
+      const vehicle = await Vehicle.findByPk(vehicleId, {
+        attributes: ['id', 'make', 'model', 'year', 'registrationNumber'],
+        raw: true
+      });
+
+      return {
+        ...rest,
+        serviceId,
+        vehicleId,
+        inventoryId,
+        service: service,
+        vehicle: vehicle,
+        inventory: inventory
+      };
+    })
   );
 
-  if (!isAdminOrSuperAdmin) {
-    return res
-      .status(401)
-      .json({
-        error:
-          'You are not authorized to retrieve maintenance record and user details'
-      });
-  }
-
-  // check if maintenance record exists
-  const maintenanceRecord =
-    await MaintenanceRecord.findByPk(maintenanceRecordId);
-
-  if (!maintenanceRecord) {
-    res.status(404).json({ error: 'Maintenance record not found' });
-    return;
-  }
-
-  const user = await maintenanceRecord.getUser();
-
-  res.status(200).json({ maintenanceRecord, user });
+  res.status(200).json({
+    maintenanceRecords: userRecordsDetails,
+    message: 'Activities records found'
+  });
 };
 
 // Update a maintenance record by ID
