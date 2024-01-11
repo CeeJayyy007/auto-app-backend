@@ -11,11 +11,6 @@ const registrationSchema = Joi.object({
     .max(30)
     .required()
     .error(new Error('Last Name is required')),
-  username: Joi.string()
-    .min(3)
-    .max(30)
-    .required()
-    .error(new Error('Username is required')),
   email: Joi.string().email().required().error(new Error('Email is required')),
   password: Joi.string()
     .min(8)

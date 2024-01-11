@@ -15,7 +15,7 @@ const User = sequelize.define(
     },
     username: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
       unique: true
     },
     email: {
@@ -43,10 +43,9 @@ const User = sequelize.define(
       }
     },
     roles: {
-      type: DataTypes.STRING,
+      type: DataTypes.ENUM('User', 'Admin', 'Super Admin'),
       allowNull: false,
-      defaultValue: 'user',
-      values: ['admin', 'superAdmin', 'user']
+      defaultValue: 'User'
     },
     permissions: {
       type: DataTypes.ARRAY(DataTypes.STRING),
