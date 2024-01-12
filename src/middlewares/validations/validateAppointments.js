@@ -5,6 +5,7 @@ const validateAppointmentsSchema = joi.object({
   time: joi.string().required(),
   note: joi.string().required(),
   vehicleId: joi.number().required(),
+  userId: joi.number().required(),
   serviceId: joi.array().items(joi.number()).required()
 });
 
@@ -18,6 +19,7 @@ const validatePartialAppointmentSchema = joi.object({
   time: joi.string(),
   note: joi.string(),
   vehicleId: joi.number(),
+  userId: joi.number(),
   status: joi.string(),
   updatedBy: joi.number(),
   serviceId: joi.array().items(joi.number()),
