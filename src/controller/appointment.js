@@ -134,8 +134,14 @@ const createServiceRequest = async (req, res) => {
     });
   }
 
-  // check that vehicle belongs to user
-  const vehicle = await user.getVehicles({
+  // check that appointment user exists and vehicle belongs to user
+  const appointmentUser = await User.findByPk(appointmentUserId);
+
+  if (!appointmentUser) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+
+  const vehicle = await appointmentUser.getVehicles({
     where: { id: vehicleId }
   });
 
