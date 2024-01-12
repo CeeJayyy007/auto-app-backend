@@ -216,7 +216,22 @@ const createService = async (req, res) => {
 
 // Get all users
 const getUsers = async (req, res) => {
-  const users = await User.findAll();
+  const users = await User.findAll(
+    {
+      include: [
+        {
+          model: Vehicle
+        }
+      ]
+    },
+    { order: [['createdAt', 'DESC']] }
+  );
+
+  if (!users || users.length === 0) {
+    res.status(404).json({ error: 'No users found' });
+    return;
+  }
+
   res.status(200).json(users);
 };
 
