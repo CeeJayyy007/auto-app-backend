@@ -12,7 +12,50 @@ const attachInventory = require('./helpers/attachInventory');
 const getMaintenanceRecords = async (req, res) => {
   const maintenanceRecords = await MaintenanceRecord.findAll();
 
-  res.status(200).json(maintenanceRecords);
+  // return all maintenance records for user with associated serviceId and vehiclesId
+  const maintenanceRecordsDetails = await Promise.all(
+    maintenanceRecords.map(async (record) => {
+      const { serviceId, vehicleId, inventoryId, ...rest } = record.get({
+        plain: true
+      });
+
+      let service = [];
+      let inventory = [];
+
+      if (serviceId.length !== 0) {
+        service = await Service.findAll({
+          where: { id: serviceId },
+          attributes: ['id', 'name'],
+          raw: true
+        });
+      }
+
+      if (inventoryId.length !== 0) {
+        inventory = await Inventory.findAll({
+          where: { id: inventoryId },
+          attributes: ['id', 'name'],
+          raw: true
+        });
+      }
+
+      const vehicle = await Vehicle.findByPk(vehicleId, {
+        attributes: ['id', 'make', 'model', 'year', 'registrationNumber'],
+        raw: true
+      });
+
+      return {
+        ...rest,
+        serviceId,
+        vehicleId,
+        inventoryId,
+        services: service,
+        vehicle: vehicle,
+        inventory: inventory
+      };
+    })
+  );
+
+  res.status(200).json(maintenanceRecordsDetails);
 };
 
 // Get a specific maintenance record by ID
@@ -94,17 +137,14 @@ const getMaintenanceRecordAndUser = async (req, res) => {
         serviceId,
         vehicleId,
         inventoryId,
-        service: service,
+        services: service,
         vehicle: vehicle,
         inventory: inventory
       };
     })
   );
 
-  res.status(200).json({
-    maintenanceRecords: userRecordsDetails,
-    message: 'Activities records found'
-  });
+  res.status(200).json(userRecordsDetails);
 };
 
 // Update a maintenance record by ID
