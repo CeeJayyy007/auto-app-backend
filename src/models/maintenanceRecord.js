@@ -46,6 +46,11 @@ const MaintenanceRecord = sequelize.define(
       allowNull: false,
       defaultValue: 0 // Duration in days
     },
+    status: {
+      type: DataTypes.ENUM('In-Progress', 'Canceled', 'Completed'),
+      allowNull: false,
+      defaultValue: 'In-Progress'
+    },
     updatedBy: {
       type: DataTypes.INTEGER,
       allowNull: true
