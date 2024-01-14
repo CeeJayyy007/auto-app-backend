@@ -7,6 +7,7 @@ const Inventory = require('../models/inventory');
 const { checkUserRole } = require('../middlewares/authMiddleware');
 const attachServices = require('./helpers/attachServices');
 const attachInventory = require('./helpers/attachInventory');
+const User = require('../models/user');
 
 // Get all maintenance records
 const getMaintenanceRecords = async (req, res) => {
@@ -114,7 +115,7 @@ const getMaintenanceRecordAndUser = async (req, res) => {
       if (serviceId.length !== 0) {
         service = await Service.findAll({
           where: { id: serviceId },
-          attributes: ['id', 'name'],
+          attributes: ['id', 'name', 'price'],
           raw: true
         });
       }
@@ -122,7 +123,7 @@ const getMaintenanceRecordAndUser = async (req, res) => {
       if (inventoryId.length !== 0) {
         inventory = await Inventory.findAll({
           where: { id: inventoryId },
-          attributes: ['id', 'name'],
+          attributes: ['id', 'name', 'finalPrice'],
           raw: true
         });
       }
@@ -132,14 +133,20 @@ const getMaintenanceRecordAndUser = async (req, res) => {
         raw: true
       });
 
+      const user = await User.findByPk(userId, {
+        attributes: ['id', 'firstName', 'lastName', 'email', 'phone'],
+        raw: true
+      });
+
       return {
         ...rest,
         serviceId,
         vehicleId,
         inventoryId,
-        services: service,
-        vehicle: vehicle,
-        inventory: inventory
+        servicesDetails: service,
+        vehicleDetails: vehicle,
+        inventoryDetails: inventory,
+        userDetails: user
       };
     })
   );
