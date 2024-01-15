@@ -36,10 +36,35 @@ const MaintenanceRecord = sequelize.define(
       allowNull: true,
       defaultValue: []
     },
+    services: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      allowNull: true,
+      defaultValue: []
+    },
+    servicesQuantities: {
+      type: DataTypes.JSONB,
+      allowNull: true,
+      defaultValue: {}
+    },
     inventoryId: {
       type: DataTypes.ARRAY(DataTypes.INTEGER),
       allowNull: true,
       defaultValue: []
+    },
+    inventory: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      allowNull: true,
+      defaultValue: []
+    },
+    inventoryQuantities: {
+      type: DataTypes.JSONB,
+      allowNull: true,
+      defaultValue: {}
+    },
+    discount: {
+      type: DataTypes.JSONB,
+      allowNull: true,
+      defaultValue: {}
     },
     duration: {
       type: DataTypes.INTEGER,
@@ -47,10 +72,11 @@ const MaintenanceRecord = sequelize.define(
       defaultValue: 0 // Duration in days
     },
     status: {
-      type: DataTypes.ENUM('In-Progress', 'Canceled', 'Completed'),
+      type: DataTypes.ENUM('In-Progress', 'Canceled', 'Ready', 'Completed'),
       allowNull: false,
       defaultValue: 'In-Progress'
     },
+
     updatedBy: {
       type: DataTypes.INTEGER,
       allowNull: true
