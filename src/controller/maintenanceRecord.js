@@ -26,7 +26,7 @@ const getMaintenanceRecords = async (req, res) => {
       if (serviceId.length !== 0) {
         service = await Service.findAll({
           where: { id: serviceId },
-          attributes: ['id', 'name'],
+          attributes: ['id', 'name', 'price'],
           raw: true
         });
       }
@@ -34,7 +34,7 @@ const getMaintenanceRecords = async (req, res) => {
       if (inventoryId.length !== 0) {
         inventory = await Inventory.findAll({
           where: { id: inventoryId },
-          attributes: ['id', 'name'],
+          attributes: ['id', 'name', 'finalPrice'],
           raw: true
         });
       }
@@ -49,9 +49,9 @@ const getMaintenanceRecords = async (req, res) => {
         serviceId,
         vehicleId,
         inventoryId,
-        services: service,
-        vehicle: vehicle,
-        inventory: inventory
+        servicesDetails: service,
+        vehicleDetails: vehicle,
+        inventoryDetails: inventory
       };
     })
   );
@@ -62,20 +62,6 @@ const getMaintenanceRecords = async (req, res) => {
 // Get a specific maintenance record by ID
 const getMaintenanceRecordById = async (req, res) => {
   const { maintenanceRecordId } = req.validatedMaintenanceRecordId;
-  const user = req.user;
-
-  // check user role
-  const isAdminOrSuperAdmin = checkUserRole(
-    ['Admin', 'Super Admin'],
-    user,
-    res
-  );
-
-  if (!isAdminOrSuperAdmin) {
-    return res
-      .status(401)
-      .json({ error: 'You are not authorized to retrieve maintenance record' });
-  }
 
   // check if maintenance record exists
   const maintenanceRecord =
@@ -86,7 +72,52 @@ const getMaintenanceRecordById = async (req, res) => {
     return;
   }
 
-  res.status(200).json(maintenanceRecord);
+  const { serviceId, vehicleId, inventoryId, userId, ...rest } =
+    maintenanceRecord.get({
+      plain: true
+    });
+
+  let service = [];
+  let inventory = [];
+
+  if (serviceId.length !== 0) {
+    service = await Service.findAll({
+      where: { id: serviceId },
+      attributes: ['id', 'name', 'price'],
+      raw: true
+    });
+  }
+
+  if (inventoryId.length !== 0) {
+    inventory = await Inventory.findAll({
+      where: { id: inventoryId },
+      attributes: ['id', 'name', 'finalPrice'],
+      raw: true
+    });
+  }
+
+  const vehicle = await Vehicle.findByPk(vehicleId, {
+    attributes: ['id', 'make', 'model', 'year', 'registrationNumber'],
+    raw: true
+  });
+
+  const userDetails = await User.findByPk(userId, {
+    attributes: ['id', 'firstName', 'lastName', 'email', 'phone'],
+    raw: true
+  });
+
+  const maintenanceRecordsDetails = {
+    ...rest,
+    serviceId,
+    vehicleId,
+    inventoryId,
+    servicesDetails: service,
+    vehicleDetails: vehicle,
+    inventoryDetails: inventory,
+    userDetails: userDetails
+  };
+
+  res.status(200).json(maintenanceRecordsDetails);
 };
 
 // Get a maintenance record and the user associated with it
