@@ -6,13 +6,19 @@ const validateMaintenanceRecordIdSchema = joi.object({
 
 const validatePartialMaintenanceRecordSchema = joi.object({
   maintenanceRecordId: joi.number(),
+  userId: joi.number(),
   date: joi.date(),
   status: joi.string(),
   note: joi.string(),
   updatedBy: joi.number(),
   deletedAt: joi.date(),
   serviceId: joi.array().items(joi.number()),
-  inventoryId: joi.array().items(joi.number())
+  inventoryId: joi.array().items(joi.number()),
+  servicesQuantities: joi.object().pattern(joi.string(), joi.number()),
+  inventoryQuantities: joi.object().pattern(joi.string(), joi.number()),
+  discount: joi.object().pattern(joi.string(), joi.number()),
+  services: joi.array().items(joi.string()),
+  inventory: joi.array().items(joi.string())
 });
 
 const validateMaintenanceRecordsId = (req, res, next) => {

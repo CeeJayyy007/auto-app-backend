@@ -60,7 +60,6 @@ maintenanceRecordsRouter.get(
  */
 maintenanceRecordsRouter.get(
   '/:maintenanceRecordId',
-  authMiddleware.userExtractor,
   validateMaintenanceRecordsId,
   maintenanceRecordController.getMaintenanceRecordById
 );
