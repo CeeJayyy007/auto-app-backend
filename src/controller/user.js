@@ -4,24 +4,61 @@ const Vehicle = require('../models/vehicle');
 const Appointment = require('../models/appointment');
 const Inventory = require('../models/inventory');
 const Service = require('../models/service');
-const { checkUserRole } = require('../middlewares/authMiddleware');
+const {
+  checkUserRole,
+  sanitizeUserData
+} = require('../middlewares/authMiddleware');
 const attachServices = require('./helpers/attachServices');
 
 // Create a new user
 const createUser = async (req, res) => {
-  const { password } = req.validatedData;
+  const user = req.user;
+
+  // check if user exists
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+
+  // check user role
+  const isAdminOrSuperAdmin = checkUserRole(
+    ['Admin', 'Super Admin'],
+    user,
+    res
+  );
+
+  if (!isAdminOrSuperAdmin) {
+    return res
+      .status(401)
+      .json({ error: 'You are not authorized to create users' });
+  }
+
+  // ensure that only super admin can create super admin users
+  if (req.validatedPartialUser.roles === 'Super Admin') {
+    if (!checkUserRole(['Super Admin'], user, res)) {
+      return res
+        .status(401)
+        .json({ error: 'You are not authorized to create Super Admin users' });
+    }
+  }
+
+  // add default password
+  const password = 'Aa1@aaaa';
 
   // Hash the password before storing it
   const hashedPassword = await bcrypt.hash(password, 10);
 
   // Create a new user with the hashed password
   const newUser = await User.create({
-    ...req.validatedData,
+    ...req.validatedPartialUser,
     password: hashedPassword,
+    updatedBy: user.id,
     avatar: null // Set the avatar to null for now (add default avatar later)
   });
 
-  res.status(201).json({ user: newUser });
+  // Exclude the password field from the response
+  const sanitizedUser = sanitizeUserData(newUser);
+
+  res.status(201).json({ user: sanitizedUser, message: 'User created' });
 };
 
 // Create a new vehicle

@@ -7,13 +7,12 @@ const validateUserIdSchema = joi.object({
 const validatePartialUserSchema = joi.object({
   firstName: joi.string().min(3).max(30),
   lastName: joi.string().min(3).max(30),
-  username: joi.string().min(3).max(30),
+  username: joi.string().default(''),
   email: joi.string().email(),
   phone: joi.string().min(10).max(15),
   avatar: joi.string(),
   roles: joi.string().allow('Admin', 'Super Admin', 'User'),
   permissions: joi.string(),
-  password: joi.string().min(8),
   updatedBy: joi.number(),
   deletedAt: joi.date()
 });

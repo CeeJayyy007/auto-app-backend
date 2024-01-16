@@ -68,7 +68,12 @@ usersRouter.get('/', userController.getUsers);
  */
 usersRouter.get('/:userId', userController.getUserById);
 
-usersRouter.post('/', validateRegistration, userController.createUser);
+usersRouter.post(
+  '/',
+  authMiddleware.userExtractor,
+  validatePartialUser,
+  userController.createUser
+);
 
 /** PUT Methods */
 /**
