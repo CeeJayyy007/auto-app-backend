@@ -31,28 +31,73 @@ const getAppointmentById = async (req, res) => {
 const getAppointmentAndUser = async (req, res) => {
   const { userId } = req.params;
 
-  // check if appointment exists
+  // // check if appointment exists
+  // const appointments = await Appointment.findAll({
+  //   where: { userId: userId },
+  //   include: [
+  //     {
+  //       model: Service
+  //     },
+  //     {
+  //       model: User
+  //     },
+  //     {
+  //       model: Vehicle
+  //     }
+  //   ]
+  // });
+
+  // if (!appointments) {
+  //   res.status(404).json({ error: 'Appointment not found' });
+  //   return;
+  // }
+  // find all maintenance records for user
   const appointments = await Appointment.findAll({
-    where: { userId: userId },
-    include: [
-      {
-        model: Service
-      },
-      {
-        model: User
-      },
-      {
-        model: Vehicle
-      }
-    ]
+    where: { userId: userId }
   });
 
   if (!appointments) {
-    res.status(404).json({ error: 'Appointment not found' });
-    return;
+    return res.status(404).json({ error: 'Appointments not found' });
   }
 
-  res.status(200).json({ appointments, message: 'Appointment found' });
+  const appointmentsDetails = await Promise.all(
+    appointments.map(async (appointment) => {
+      const { serviceId, vehicleId, ...rest } = appointment.get({
+        plain: true
+      });
+
+      let service = [];
+
+      if (serviceId.length !== 0) {
+        service = await Service.findAll({
+          where: { id: serviceId },
+          attributes: ['id', 'name', 'price'],
+          raw: true
+        });
+      }
+
+      const vehicle = await Vehicle.findByPk(vehicleId, {
+        attributes: ['id', 'make', 'model', 'year', 'registrationNumber'],
+        raw: true
+      });
+
+      const user = await User.findByPk(userId, {
+        attributes: ['id', 'firstName', 'lastName', 'email', 'phone'],
+        raw: true
+      });
+
+      return {
+        ...rest,
+        serviceId,
+        vehicleId,
+        servicesDetails: service,
+        vehicleDetails: vehicle,
+        userDetails: user
+      };
+    })
+  );
+
+  res.status(200).json(appointmentsDetails);
 };
 
 // Update an appointment by ID
