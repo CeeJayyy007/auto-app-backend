@@ -49,23 +49,23 @@ const Inventory = sequelize.define(
     // Exclude deletedAt field by default when converting to JSON
     defaultScope: {
       attributes: { exclude: ['deletedAt'] }
-    },
-    hooks: {
-      beforeValidate: (inventory, options) => {
-        return new Promise((resolve) => {
-          // Calculate the finalPrice before saving
-          inventory.finalPrice = inventory.initialPrice * inventory.markUp;
-          resolve();
-        });
-      },
-      beforeSave: (inventory, options) => {
-        return new Promise((resolve) => {
-          // Calculate the finalPrice before saving
-          inventory.finalPrice = inventory.initialPrice * inventory.markUp;
-          resolve();
-        });
-      }
     }
+    // hooks: {
+    //   beforeValidate: (inventory, options) => {
+    //     return new Promise((resolve) => {
+    //       // Calculate the finalPrice before saving
+    //       inventory.finalPrice = inventory.initialPrice * inventory.markUp;
+    //       resolve();
+    //     });
+    //   },
+    //   beforeSave: (inventory, options) => {
+    //     return new Promise((resolve) => {
+    //       // Calculate the finalPrice before saving
+    //       inventory.finalPrice = inventory.initialPrice * inventory.markUp;
+    //       resolve();
+    //     });
+    //   }
+    // }
   }
 );
 
