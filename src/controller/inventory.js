@@ -12,7 +12,7 @@ const getInventoryById = async (req, res) => {
   const { inventoryId } = req.validatedInventoryId;
 
   // check user role
-  checkUserRole(['admin', 'superAdmin'], user, res);
+  checkUserRole(['Admin', 'Super Admin'], user, res);
 
   // check if inventory exists
   const inventory = await Inventory.findByPk(inventoryId);
@@ -30,7 +30,7 @@ const getInventoryAndUser = async (req, res) => {
   const { inventoryId } = req.validatedInventoryId;
 
   // check user role
-  checkUserRole(['admin', 'superAdmin'], user, res);
+  checkUserRole(['Admin', 'Super Admin'], user, res);
 
   // check if inventory exists
   const inventory = await Inventory.findByPk(inventoryId);
@@ -51,7 +51,7 @@ const updateInventory = async (req, res) => {
   const user = req.user;
 
   // check user role
-  checkUserRole(['admin', 'superAdmin'], user, res);
+  checkUserRole(['Admin', 'Super Admin'], user, res);
 
   // check if inventory exists
   const inventory = await Inventory.findByPk(inventoryId);
@@ -90,7 +90,7 @@ const deleteInventory = async (req, res) => {
   const user = req.user;
 
   // check user role
-  checkUserRole(['admin', 'superAdmin'], user, res);
+  checkUserRole(['Admin', 'Super Admin'], user, res);
 
   // check if inventory exists
   const inventory = await Inventory.findByPk(inventoryId);
