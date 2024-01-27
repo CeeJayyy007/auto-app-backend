@@ -5,7 +5,7 @@ const validateInventorySchema = joi.object({
   quantity: joi.number().required(),
   lowLevel: joi.number().required(),
   initialPrice: joi.number().required(),
-  markUp: joi.number().required()
+  finalPrice: joi.number().required()
 });
 
 const validateInventoryIdSchema = joi.object({
@@ -17,7 +17,7 @@ const validatePartialInventorySchema = joi.object({
   quantity: joi.number(),
   lowLevel: joi.number(),
   initialPrice: joi.number(),
-  markUp: joi.number(),
+  finalPrice: joi.number(),
   updatedBy: joi.number(),
   deletedAt: joi.date()
 });
