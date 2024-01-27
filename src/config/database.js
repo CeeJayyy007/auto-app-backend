@@ -1,6 +1,5 @@
 const { Sequelize } = require('sequelize');
 const config = require('./config');
-const chalk = require('chalk');
 const { logger } = require('./logging');
 
 // Sequelize configuration
