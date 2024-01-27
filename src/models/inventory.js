@@ -22,11 +22,6 @@ const Inventory = sequelize.define(
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false
     },
-    markUp: {
-      type: DataTypes.DECIMAL(5, 2),
-      allowNull: false,
-      defaultValue: 1
-    },
     status: {
       type: DataTypes.ENUM('Low Stock', 'In Stock', 'Out of Stock'),
       allowNull: false,
@@ -50,22 +45,6 @@ const Inventory = sequelize.define(
     defaultScope: {
       attributes: { exclude: ['deletedAt'] }
     }
-    // hooks: {
-    //   beforeValidate: (inventory, options) => {
-    //     return new Promise((resolve) => {
-    //       // Calculate the finalPrice before saving
-    //       inventory.finalPrice = inventory.initialPrice * inventory.markUp;
-    //       resolve();
-    //     });
-    //   },
-    //   beforeSave: (inventory, options) => {
-    //     return new Promise((resolve) => {
-    //       // Calculate the finalPrice before saving
-    //       inventory.finalPrice = inventory.initialPrice * inventory.markUp;
-    //       resolve();
-    //     });
-    //   }
-    // }
   }
 );
 
