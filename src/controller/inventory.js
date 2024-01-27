@@ -1,5 +1,6 @@
 const { checkUserRole } = require('../middlewares/authMiddleware');
 const Inventory = require('../models/inventory');
+const getStatus = require('./helpers/utils');
 
 // Get all inventory
 const getInventory = async (req, res) => {
@@ -61,9 +62,15 @@ const updateInventory = async (req, res) => {
     return;
   }
 
+  const { quantity, lowLevel } = req.validatedPartialInventory;
+
   // Update the inventory
   const [updatedRows] = await Inventory.update(
-    { ...req.validatedPartialInventory, updatedBy: user.id },
+    {
+      ...req.validatedPartialInventory,
+      updatedBy: user.id,
+      status: getStatus(quantity, lowLevel)
+    },
     {
       where: { id: inventoryId },
       individualHooks: true

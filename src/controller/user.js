@@ -9,6 +9,7 @@ const {
   sanitizeUserData
 } = require('../middlewares/authMiddleware');
 const attachServices = require('./helpers/attachServices');
+const getStatus = require('./helpers/utils');
 
 // Create a new user
 const createUser = async (req, res) => {
@@ -176,7 +177,7 @@ const createAppointment = async (req, res) => {
 
 // Create a new inventory
 const createInventory = async (req, res) => {
-  const { name } = req.validatedData;
+  const { name, quantity, lowLevel } = req.validatedData;
   const user = req.user;
 
   // check user role
@@ -204,6 +205,7 @@ const createInventory = async (req, res) => {
   // Create a new inventory item
   const inventory = await Inventory.create({
     ...req.validatedData,
+    status: getStatus(quantity, lowLevel),
     userId: user.id
   });
 
@@ -226,7 +228,6 @@ const createService = async (req, res) => {
 
   if (!isAdminOrSuperAdmin) {
     return res
-
       .status(401)
       .json({ error: 'You are not authorized to create services' });
   }
