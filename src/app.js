@@ -17,7 +17,6 @@ const { morganMiddleware } = require('./config/logging');
 const unknownEndpoint = require('./middlewares/unknownEndpoint');
 const morgan = require('morgan');
 const swaggerDocs = require('./swagger-ui/swagger');
-const maintenanceRecordsRouter = require('./routes/maintenancerecordRoutes');
 
 // middlewares
 app.use(bodyParser.json());
