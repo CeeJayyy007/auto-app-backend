@@ -77,11 +77,11 @@ const getMaintenanceRecordById = async (req, res) => {
       plain: true
     });
 
-  let service = [];
-  let inventory = [];
+  let serviceData = [];
+  let inventoryData = [];
 
   if (serviceId.length !== 0) {
-    service = await Service.findAll({
+    serviceData = await Service.findAll({
       where: { id: serviceId },
       attributes: ['id', 'name', 'price'],
       raw: true
@@ -89,7 +89,7 @@ const getMaintenanceRecordById = async (req, res) => {
   }
 
   if (inventoryId.length !== 0) {
-    inventory = await Inventory.findAll({
+    inventoryData = await Inventory.findAll({
       where: { id: inventoryId },
       attributes: ['id', 'name', 'finalPrice'],
       raw: true
@@ -106,14 +106,19 @@ const getMaintenanceRecordById = async (req, res) => {
     raw: true
   });
 
+  const services = serviceData.map((item) => item.name);
+  const inventory = inventoryData.map((item) => item.name);
+
   const maintenanceRecordsDetails = {
     ...rest,
     serviceId,
     vehicleId,
     inventoryId,
-    servicesDetails: service,
+    servicesDetails: serviceData,
     vehicleDetails: vehicle,
-    inventoryDetails: inventory,
+    services,
+    inventory,
+    inventoryDetails: inventoryData,
     userDetails: userDetails
   };
 
