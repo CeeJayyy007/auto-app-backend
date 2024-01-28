@@ -3,20 +3,13 @@ const config = require('./config');
 const { logger } = require('./logging');
 
 // Sequelize configuration
-// const sequelize = new Sequelize({
-//   dialect: 'postgres',
-//   host: config.DB_HOST,
-//   port: config.DB_PORT,
-//   database: config.DB_NAME,
-//   username: config.DB_USER,
-//   password: config.DB_PASSWORD
-// });
-
-console.log('config', config);
-
-// sequelize database configuration url
-const sequelize = new Sequelize(config.DATABASE_URL, {
-  dialect: 'postgres'
+const sequelize = new Sequelize({
+  dialect: 'postgres',
+  host: config.DB_HOST,
+  port: config.DB_PORT,
+  database: config.DB_NAME,
+  username: config.DB_USER,
+  password: config.DB_PASSWORD
 });
 
 const checkConnection = async () => {
