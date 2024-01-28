@@ -10,6 +10,7 @@ const appointmentsRouter = require('./routes/appointmentRoutes');
 const inventoryRouter = require('./routes/inventoryRoutes');
 const servicesRouter = require('./routes/serviceRoutes');
 const attachmentsRouter = require('./routes/attachmentRoutes');
+const maintenanceRecordsRouter = require('./routes/maintenanceRecordRoutes');
 const cors = require('cors');
 const errorHandler = require('./middlewares/errorHandler');
 const { tokenExtractor } = require('./middlewares/authMiddleware');
