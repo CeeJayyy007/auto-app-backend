@@ -9,7 +9,9 @@
     "test": "cross-env NODE_ENV=test jest --detectOpenHandles --verbose --runInBand",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "start:test": "NODE_ENV=test node src/index.js"
+    "start:test": "NODE_ENV=test node src/index.js",
+    "build:ui": "rm -rf dist && cd ../../auto-app/auto-app-front-end/ && npm run build && cp -r dist ../../auto-app/auto-app-backend/",
+    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push"
   },
   "keywords": [],
   "author": "",
