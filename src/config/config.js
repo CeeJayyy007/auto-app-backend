@@ -7,6 +7,7 @@ let DB_USER;
 let DB_PASSWORD;
 let DB_HOST;
 let DB_PORT;
+let DATABASE_URL;
 
 if (process.env.NODE_ENV === 'test') {
   DB_NAME = process.env.DB_NAME_TEST;
@@ -14,12 +15,14 @@ if (process.env.NODE_ENV === 'test') {
   DB_PASSWORD = process.env.DB_PASSWORD;
   DB_HOST = process.env.DB_HOST;
   DB_PORT = process.env.DB_PORT;
+  DATABASE_URL = process.env.DATABASE_URL_TEST;
 } else {
   DB_NAME = process.env.DB_NAME;
   DB_USER = process.env.DB_USER;
   DB_PASSWORD = process.env.DB_PASSWORD;
   DB_HOST = process.env.DB_HOST;
   DB_PORT = process.env.DB_PORT;
+  DATABASE_URL = process.env.DATABASE_URL;
 }
 
 module.exports = {
@@ -28,5 +31,6 @@ module.exports = {
   DB_USER,
   DB_PASSWORD,
   DB_HOST,
-  DB_PORT
+  DB_PORT,
+  DATABASE_URL
 };
