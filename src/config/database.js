@@ -9,7 +9,17 @@ const sequelize = new Sequelize({
   port: config.DB_PORT,
   database: config.DB_NAME,
   username: config.DB_USER,
-  password: config.DB_PASSWORD
+  password: config.DB_PASSWORD,
+  pool: {
+    max: 64,
+    min: 2,
+    acquire: 300000,
+    idle: 30000
+  },
+  ssl: {
+    rejectUnauthorized: false,
+    require: true
+  }
 });
 
 const checkConnection = async () => {
