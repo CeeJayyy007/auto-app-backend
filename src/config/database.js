@@ -17,10 +17,7 @@ const sequelize = new Sequelize({
     idle: 30000
   },
   dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false
-    }
+    ssl: true
   }
 });
 
