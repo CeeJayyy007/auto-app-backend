@@ -16,9 +16,11 @@ const sequelize = new Sequelize({
     acquire: 300000,
     idle: 30000
   },
-  ssl: {
-    rejectUnauthorized: false,
-    require: true
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false
+    }
   }
 });
 
