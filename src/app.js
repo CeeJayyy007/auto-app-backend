@@ -20,6 +20,7 @@ const morgan = require('morgan');
 const swaggerDocs = require('./swagger-ui/swagger');
 
 // middlewares
+app.use(express.static('dist'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
