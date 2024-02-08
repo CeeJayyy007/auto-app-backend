@@ -5,6 +5,12 @@ const getStatus = require('./helpers/utils');
 // Get all inventory
 const getInventory = async (req, res) => {
   const inventory = await Inventory.findAll();
+
+  // check the status of the inventory and update it using the quantity and lowLevel
+  inventory.forEach((inv) => {
+    inv.status = getStatus(inv.quantity, inv.lowLevel);
+  });
+
   res.status(200).json(inventory);
 };
 

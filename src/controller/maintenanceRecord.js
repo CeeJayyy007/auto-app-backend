@@ -267,7 +267,7 @@ const updateMaintenanceRecord = async (req, res) => {
       raw: true
     });
 
-    const updatedInventory = await Promise.all(
+    await Promise.all(
       inventory.map(async (inventory) => {
         // check that the inventory quantity is not less than the quantity used
         if (inventory.quantity < inventoryQuantities[inventory.name]) {
@@ -277,7 +277,7 @@ const updateMaintenanceRecord = async (req, res) => {
           return;
         }
 
-        await Inventory.update(
+        const updatedInventory = await Inventory.update(
           {
             quantity: inventory.quantity - inventoryQuantities[inventory.name]
           },
@@ -286,14 +286,13 @@ const updateMaintenanceRecord = async (req, res) => {
           }
         );
 
+        if (!updatedInventory) {
+          res.status(500).json({ error: 'Error updating inventory' });
+          return;
+        }
         return updatedInventory;
       })
     );
-
-    if (!updatedInventory) {
-      res.status(500).json({ error: 'Error updating inventory' });
-      return;
-    }
   }
 
   // Update the maintenance record
