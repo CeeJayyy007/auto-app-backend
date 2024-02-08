@@ -197,7 +197,8 @@ const updateMaintenanceRecord = async (req, res) => {
   const {
     status: appointmentStatus,
     serviceId,
-    inventoryId
+    inventoryId,
+    inventoryQuantities
   } = req.validatedPartialMaintenanceRecord;
   const user = req.user;
 
@@ -266,11 +267,28 @@ const updateMaintenanceRecord = async (req, res) => {
       raw: true
     });
 
-    inventory.forEach(async (inventory) => {
-      const updatedInventory = await Inventory.update({
-        quantity: inventory.quantity - 1
-      });
-    });
+    const updatedInventory = await Promise.all(
+      inventory.map(async (inventory) => {
+        // check that the inventory quantity is not less than the quantity used
+        if (inventory.quantity < inventoryQuantities[inventory.name]) {
+          res.status(400).json({
+            error: `The quantity of ${inventory.name} is insufficient for this maintenance record. Available quantity is ${inventory.quantity}`
+          });
+          return;
+        }
+
+        await Inventory.update(
+          {
+            quantity: inventory.quantity - inventoryQuantities[inventory.name]
+          },
+          {
+            where: { id: inventory.id }
+          }
+        );
+
+        return updatedInventory;
+      })
+    );
 
     if (!updatedInventory) {
       res.status(500).json({ error: 'Error updating inventory' });
