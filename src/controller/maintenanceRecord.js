@@ -8,6 +8,7 @@ const { checkUserRole } = require('../middlewares/authMiddleware');
 const attachServices = require('./helpers/attachServices');
 const attachInventory = require('./helpers/attachInventory');
 const User = require('../models/user');
+const { where } = require('sequelize');
 
 // Get all maintenance records
 const getMaintenanceRecords = async (req, res) => {
@@ -243,10 +244,10 @@ const updateMaintenanceRecord = async (req, res) => {
   }
 
   // if status is completed, update the appointment status to completed
-  if (appointmentStatus === 'Completed') {
+  if (appointmentStatus === 'Completed' || 'Cancelled') {
     // Update the appointment
     const [updatedRows] = await Appointment.update(
-      { status: appointmentStatus, updatedBy: user.id, serviceId: serviceId },
+      { status: 'Completed', updatedBy: user.id, serviceId: serviceId },
       {
         where: { id: appointment.id }
       }
@@ -254,6 +255,25 @@ const updateMaintenanceRecord = async (req, res) => {
 
     if (updatedRows === 0) {
       res.status(404).json({ error: 'Appointment not found' });
+      return;
+    }
+  }
+
+  // update inventory by deducting used inventory items
+  if (inventoryId.length !== 0) {
+    const inventory = await Inventory.findAll({
+      where: { id: inventoryId },
+      raw: true
+    });
+
+    inventory.forEach(async (inventory) => {
+      const updatedInventory = await Inventory.update({
+        quantity: inventory.quantity - 1
+      });
+    });
+
+    if (!updatedInventory) {
+      res.status(500).json({ error: 'Error updating inventory' });
       return;
     }
   }
